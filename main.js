@@ -44,7 +44,7 @@ function shell() {
         <label>ایڈوانس<input name="advance" type="number" min="0" value="0"></label>
         <label>سائز / کمرے<input name="size" placeholder="5 مرلہ، 2 کمرے"></label>
         <label>رابطہ موبائل نمبر<input name="owner_phone" type="tel" required></label>
-        <label>تصاویر (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/*" multiple></label>
+        <label>تصاویر (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
         <label class="wide"><span><input name="use_current_location" type="checkbox" style="display:inline;width:auto"> یہ پراپرٹی میری موجودہ لوکیشن پر ہے</span></label>
         <label class="wide">تفصیل<textarea name="description"></textarea></label>
         <button class="primary">اشتہار شائع کریں</button>
@@ -69,7 +69,7 @@ function shell() {
   </main><footer>RENT MATCH ©</footer>`;
 
   document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
-  $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), false); });
+  $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
   $('#otpForm').addEventListener('submit', sendOtp);
@@ -87,7 +87,7 @@ function tab(name) {
 function card(x) {
   const images = (x.photo_urls || []).map(u => `<img src="${esc(u)}" alt="پراپرٹی">`).join('');
   const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
-  const whatsapp = phone.replace(/\D/g, '');
+  let whatsapp = phone.replace(/\D/g, '');\n  if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);\n  if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);\n  else if (whatsapp.startsWith('3') && whatsapp.length === 10) whatsapp = '92' + whatsapp;
   return `<article class="card">${images}<div class="body">
     <span class="pill">${esc(x.type)}</span><span class="pill">${esc(x.area)}</span>
     <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} / ماہ</div>
@@ -137,7 +137,7 @@ async function loadListings(form = null, useLocation = true, target = 'results')
     if (type) q = q.eq('type', type);
     if (rent) q = q.lte('rent', Number(rent));
     if (advance) q = q.lte('advance', Number(advance));
-    if (area) useLocation = false;
+    if (area) {\n      useLocation = false;\n      if ($('#locationStatus')) $('#locationStatus').textContent = `آپ کے منتخب کردہ علاقے: ${area} کی پراپرٹیز دکھائی جا رہی ہیں۔`;\n    }
   }
   if (useLocation && state.location) {
     const lat = state.location.latitude, lng = state.location.longitude;
