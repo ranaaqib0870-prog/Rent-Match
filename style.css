@@ -81,3 +81,25 @@ body.media-viewer-open{overflow:hidden}
 .earning-card h3{margin:9px 0 6px;font-size:17px}.earning-card p,.earning-card li,.earning-card strong{font-size:13px;line-height:1.7}
 .earning-card ul{padding-inline-start:20px;margin:8px 0}.earning-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7f2eb;color:#126b4b;font-size:12px;font-weight:800}
 .featured-plan{border-color:#b9d9c5;background:#fbfffc}.earning-note{margin:12px 0 0}
+
+
+/* Facebook-style right rail for business and promotion options */
+.page-layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:20px;align-items:start}
+.page-content{min-width:0}
+.earning-sidebar{position:sticky;top:16px;align-self:start;min-width:0}
+.earning-sidebar .earning-panel{margin:0;padding:16px;border-radius:16px}
+.earning-sidebar .earning-heading h2{font-size:18px;line-height:1.45}
+.earning-sidebar .earning-heading p{font-size:12px}
+.earning-sidebar .earning-grid{grid-template-columns:1fr;gap:10px;margin-top:12px}
+.earning-sidebar .earning-card{padding:12px}
+.earning-sidebar .earning-card h3{font-size:15px}
+.earning-sidebar .earning-card p,.earning-sidebar .earning-card li,.earning-sidebar .earning-card strong{font-size:12px}
+.earning-sidebar .earning-note{font-size:11px}
+@media(max-width:850px){
+ .page-layout{grid-template-columns:minmax(0,1fr) 250px;gap:14px}
+}
+@media(max-width:700px){
+ .page-layout{grid-template-columns:1fr}
+ .earning-sidebar{position:static;grid-row:2}
+ .earning-sidebar .earning-grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+}
