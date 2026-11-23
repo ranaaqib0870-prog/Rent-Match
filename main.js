@@ -10,6 +10,56 @@ const supabase = url && anon ? createClient(url, anon, {
 const $ = (s) => document.querySelector(s);
 const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false };
 
+const translations = {
+  'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
+  'پراپرٹی تلاش کریں':'Find Property','اشتہار لگائیں':'Post Listing','ضرورت درج کریں':'Post Requirement',
+  'میرے اشتہارات':'My Listings','اکاؤنٹ':'Account','ایڈمن':'Admin',
+  'گھر یا دکان تلاش کریں':'Find a house or shop','شہر / علاقہ':'City / Area',
+  'قسم':'Type','دونوں':'Both','گھر':'House','دکان':'Shop',
+  'زیادہ سے زیادہ کرایہ':'Maximum Rent','زیادہ سے زیادہ ایڈوانس':'Maximum Advance',
+  'تلاش کریں':'Search','میری موجودہ لوکیشن':'My Current Location',
+  'پراپرٹی کا اشتہار لگائیں':'Post a Property Listing','ماہانہ کرایہ':'Monthly Rent',
+  'ایڈوانس':'Advance','سائز / کمرے':'Size / Rooms','رابطہ موبائل نمبر':'Contact Mobile Number',
+  'تصاویر (زیادہ سے زیادہ 5)':'Photos (up to 5)','تفصیل':'Description',
+  'اشتہار شائع کریں':'Publish Listing','یہ پراپرٹی میری موجودہ لوکیشن پر ہے':'This property is at my current location',
+  'اپنی ضرورت درج کریں':'Post Your Requirement','اضافی شرائط':'Additional Requirements',
+  'مطابق پراپرٹیز تلاش کریں':'Find Matching Properties',
+  'یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔':'View and remove your own listings here.',
+  'اکاؤنٹ میں لاگ اِن':'Sign in to Your Account',
+  'بغیر OTP کے اپنے اکاؤنٹ سے محفوظ طریقے سے لاگ اِن کریں۔':'Sign in securely without an OTP.',
+  'Google / Gmail سے لاگ اِن کریں':'Continue with Google / Gmail',
+  'Facebook سے لاگ اِن کریں':'Continue with Facebook',
+  'لاگ اِن کرنے کے لیے ایک آپشن منتخب کریں۔':'Choose a sign-in option.',
+  'ایڈمن کنٹرول':'Admin Control','ایڈمن اکاؤنٹ سے لاگ اِن کریں۔':'Sign in with an admin account.',
+  'پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔':'Do not pay an advance before viewing the property and verifying the owner.',
+  'RENT MATCH ©':'RENT MATCH ©','کال کریں':'Call','رپورٹ کریں':'Report',
+  'اشتہار ہٹائیں':'Remove Listing','میرا اشتہار ختم کریں':'Remove My Listing',
+  'WhatsApp':'WhatsApp','اس وقت کوئی مناسب پراپرٹی نہیں ملی۔':'No matching properties found.',
+  'لاگ آؤٹ':'Log out'
+};
+function applyLanguage(lang) {
+  const english = lang === 'en';
+  document.documentElement.lang = english ? 'en' : 'ur';
+  document.documentElement.dir = english ? 'ltr' : 'rtl';
+  const walker = document.createTreeWalker(document.querySelector('#app'), NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    const original = node.nodeValue.trim();
+    if (!original) continue;
+    if (english && translations[original]) node.nodeValue = node.nodeValue.replace(original, translations[original]);
+    else if (!english) {
+      const reverse = Object.entries(translations).find(([, value]) => value === original);
+      if (reverse) node.nodeValue = node.nodeValue.replace(original, reverse[0]);
+    }
+  }
+  document.querySelectorAll('#app input[placeholder], #app textarea[placeholder]').forEach(el => {
+    if (english && el.placeholder === 'مثلاً خوشاب، جوہرآباد') el.placeholder = 'e.g. Khushab, Jauharabad';
+    else if (!english && el.placeholder === 'e.g. Khushab, Jauharabad') el.placeholder = 'مثلاً خوشاب، جوہرآباد';
+  });
+  localStorage.setItem('rent-match-language', lang);
+}
+
+
 function notice(message) { alert(message); }
 function esc(value = '') {
   return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -73,7 +123,7 @@ function shell() {
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
   </main><footer>RENT MATCH ©</footer>`;
 
-  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  const languageSelect = $('#languageSelect');\n  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';\n  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));\n  applyLanguage(languageSelect.value);\n  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
