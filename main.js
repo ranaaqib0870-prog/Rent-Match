@@ -87,6 +87,15 @@ function shell() {
         <p>اپنی ضرورت کے مطابق پراپرٹی تلاش کرنے کے لیے یہاں کلک کریں۔</p>
         <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
       </div>
+      <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
+        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p></div>
+        <div class="earning-grid">
+          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Featured Ad</span><h3>نمایاں پراپرٹی اشتہار</h3><p>اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul></article>
+          <article class="earning-card"><span class="earning-badge">🏢 Agent Plan</span><h3>پراپرٹی ڈیلر پیکج</h3><p>ڈیلرز اور ایجنٹس کے لیے ماہانہ پیکج، زیادہ اشتہارات اور کاروباری پروفائل۔</p><strong>مجوزہ قیمت: Rs 2,000 / ماہ</strong></article>
+          <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
+        </div>
+        <p class="earning-note">نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا۔</p>
+      </section></div>
       <div id="propertySearchPanel" class="panel search-panel hidden">
       <p id="locationStatus" class="muted">آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…</p>
       <form id="searchForm" class="grid">
@@ -137,17 +146,7 @@ function shell() {
     <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminListings" class="cards"></div></div></section>
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
       </div>
-      <aside class="earning-sidebar" aria-label="RENT MATCH paid promotion options">
-      <section class="earning-panel" aria-labelledby="earningTitle">
-        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p></div>
-        <div class="earning-grid">
-          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Featured Ad</span><h3>نمایاں پراپرٹی اشتہار</h3><p>اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul></article>
-          <article class="earning-card"><span class="earning-badge">🏢 Agent Plan</span><h3>پراپرٹی ڈیلر پیکج</h3><p>ڈیلرز اور ایجنٹس کے لیے ماہانہ پیکج، زیادہ اشتہارات اور کاروباری پروفائل۔</p><strong>مجوزہ قیمت: Rs 2,000 / ماہ</strong></article>
-          <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
-        </div>
-        <p class="earning-note">نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا۔</p>
-      </section>
-      </aside>
+
     </div>
   </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><footer>RENT MATCH ©</footer>`;
 
