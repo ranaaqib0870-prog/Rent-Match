@@ -4,52 +4,207 @@ import './style.css';
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = url && anon ? createClient(url, anon) : null;
+
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false };
+
+const state = {
+  user: null,
+  listings: [],
+  tab: 'search',
+  admin: false
+};
 
 function shell() {
   $('#app').innerHTML = `
-  <header><div class="wrap"><div class="brand">🏠 RENT MATCH</div><p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
-  <nav><button data-tab="search" class="active">پراپرٹی تلاش کریں</button><button data-tab="post">اشتہار لگائیں</button><button data-tab="wanted">ضرورت درج کریں</button><button data-tab="account">اکاؤنٹ</button><button data-tab="admin">ایڈمن</button></nav></div></header>
+  <header>
+    <div class="wrap">
+      <div class="brand">🏠 RENT MATCH</div>
+      <p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
+      <nav>
+        <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
+        <button data-tab="post">اشتہار لگائیں</button>
+        <button data-tab="wanted">ضرورت درج کریں</button>
+        <button data-tab="account">اکاؤنٹ</button>
+        <button data-tab="admin">ایڈمن</button>
+      </nav>
+    </div>
+  </header>
+
   <main class="wrap">
-   <section id="search" class="tab"><div class="panel"><h2>گھر یا دکان تلاش کریں</h2><form id="searchForm" class="grid">
-    <label>شہر / علاقہ<input name="area" placeholder="مثلاً خوشاب، جوہرآباد"></label>
-    <label>قسم<select name="type"><option value="">دونوں</option><option>گھر</option><option>دکان</option></select></label>
-    <label>زیادہ سے زیادہ کرایہ<input name="rent" type="number" min="0"></label>
-    <label>زیادہ سے زیادہ ایڈوانس<input name="advance" type="number" min="0"></label>
-    <button class="primary">تلاش کریں</button></form></div><div id="results" class="cards"></div></section>
 
-   <section id="post" class="tab hidden"><div class="panel"><h2>پراپرٹی کا اشتہار لگائیں</h2><form id="postForm" class="grid">
-    <label>قسم<select name="type"><option>گھر</option><option>دکان</option></select></label>
-    <label>شہر / علاقہ<input name="area" required></label>
-    <label>ماہانہ کرایہ<input name="rent" type="number" min="1" required></label>
-    <label>ایڈوانس<input name="advance" type="number" min="0" value="0"></label>
-    <label>سائز / کمرے<input name="size" placeholder="5 مرلہ، 2 کمرے"></label>
-    <label>رابطہ موبائل نمبر<input name="owner_phone" type="tel" placeholder="+923001234567" required></label>
-    <label>تصاویر (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/*" multiple></label>
-    <label class="wide">تفصیل<textarea name="description"></textarea></label>
-    <button class="primary">اشتہار شائع کریں</button></form>
-    <p class="muted">اشتہار شائع کرنے کے لیے پہلے Gmail OTP سے لاگ اِن کریں۔</p></div></section>
+    <section id="search" class="tab">
+      <div class="panel">
+        <h2>گھر یا دکان تلاش کریں</h2>
+        <form id="searchForm" class="grid">
+          <label>شہر / علاقہ
+            <input name="area" placeholder="مثلاً خوشاب، جوہرآباد">
+          </label>
 
-   <section id="wanted" class="tab hidden"><div class="panel"><h2>اپنی ضرورت درج کریں</h2><form id="wantedForm" class="grid">
-    <label>شہر / علاقہ<input name="area" required></label><label>قسم<select name="type"><option>گھر</option><option>دکان</option></select></label>
-    <label>زیادہ سے زیادہ کرایہ<input name="rent" type="number" min="1" required></label><label>زیادہ سے زیادہ ایڈوانس<input name="advance" type="number" min="0"></label>
-    <label class="wide">اضافی شرائط<textarea name="notes"></textarea></label><button class="primary">مطابق پراپرٹیز تلاش کریں</button></form></div><div id="wantedResults" class="cards"></div></section>
+          <label>قسم
+            <select name="type">
+              <option value="">دونوں</option>
+              <option>گھر</option>
+              <option>دکان</option>
+            </select>
+          </label>
 
-   <section id="account" class="tab hidden"><div class="panel"><h2>Gmail سے لاگ اِن</h2>
-    <form id="otpForm" class="grid"><label>Gmail ایڈریس<input name="email" type="email" placeholder="example@gmail.com" required></label>
-    <button class="primary">Gmail OTP بھیجیں</button></form>
-    <form id="verifyForm" class="grid hidden"><label>Gmail پر موصول ہونے والا OTP<input name="token" inputmode="numeric" autocomplete="one-time-code" required></label>
-    <button class="primary">تصدیق کریں</button></form>
-    <p id="accountStatus" class="muted">اپنا Gmail درج کریں، ہم اس پر تصدیقی کوڈ بھیجیں گے۔</p>
-    <button id="logout" class="secondary hidden">لاگ آؤٹ</button></div></section>
+          <label>زیادہ سے زیادہ کرایہ
+            <input name="rent" type="number" min="0">
+          </label>
 
-   <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminListings" class="cards"></div></div></section>
-   <div class="notice">حفاظتی اصول: پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔ جعلی اشتہار رپورٹ کریں۔</div>
-  </main><footer>RENT MATCH ©</footer>`;
+          <label>زیادہ سے زیادہ ایڈوانس
+            <input name="advance" type="number" min="0">
+          </label>
 
-  document.querySelectorAll('nav button').forEach(b => b.onclick = () => tab(b.dataset.tab));
-  $('#searchForm').onsubmit = e => { e.preventDefault(); loadListings(new FormData(e.target)); };
+          <button class="primary">تلاش کریں</button>
+        </form>
+      </div>
+
+      <div id="results" class="cards"></div>
+    </section>
+
+    <section id="post" class="tab hidden">
+      <div class="panel">
+        <h2>پراپرٹی کا اشتہار لگائیں</h2>
+
+        <form id="postForm" class="grid">
+
+          <label>قسم
+            <select name="type">
+              <option>گھر</option>
+              <option>دکان</option>
+            </select>
+          </label>
+
+          <label>شہر / علاقہ
+            <input name="area" required>
+          </label>
+
+          <label>ماہانہ کرایہ
+            <input name="rent" type="number" min="1" required>
+          </label>
+
+          <label>ایڈوانس
+            <input name="advance" type="number" min="0" value="0">
+          </label>
+
+          <label>سائز / کمرے
+            <input name="size" placeholder="5 مرلہ، 2 کمرے">
+          </label>
+
+          <label>رابطہ موبائل نمبر
+            <input name="owner_phone" type="tel" required>
+          </label>
+
+          <label>تصاویر (زیادہ سے زیادہ 5)
+            <input name="photos" type="file" accept="image/*" multiple>
+          </label>
+
+          <label class="wide">تفصیل
+            <textarea name="description"></textarea>
+          </label>
+
+          <button class="primary">اشتہار شائع کریں</button>
+        </form>
+
+        <p class="muted">
+          اشتہار شائع کرنے کے لیے پہلے Gmail سے لاگ اِن کریں۔
+        </p>
+      </div>
+    </section>
+
+    <section id="wanted" class="tab hidden">
+      <div class="panel">
+        <h2>اپنی ضرورت درج کریں</h2>
+
+        <form id="wantedForm" class="grid">
+
+          <label>شہر / علاقہ
+            <input name="area" required>
+          </label>
+
+          <label>قسم
+            <select name="type">
+              <option>گھر</option>
+              <option>دکان</option>
+            </select>
+          </label>
+
+          <label>زیادہ سے زیادہ کرایہ
+            <input name="rent" type="number" min="1" required>
+          </label>
+
+          <label>زیادہ سے زیادہ ایڈوانس
+            <input name="advance" type="number" min="0">
+          </label>
+
+          <label class="wide">اضافی شرائط
+            <textarea name="notes"></textarea>
+          </label>
+
+          <button class="primary">مطابق پراپرٹیز تلاش کریں</button>
+        </form>
+      </div>
+
+      <div id="wantedResults" class="cards"></div>
+    </section>
+
+    <section id="account" class="tab hidden">
+      <div class="panel">
+        <h2>Gmail سے لاگ اِن</h2>
+
+        <form id="otpForm" class="grid">
+          <label>Gmail ایڈریس
+            <input name="email" type="email" required>
+          </label>
+
+          <button class="primary">Gmail OTP بھیجیں</button>
+        </form>
+
+        <form id="verifyForm" class="grid hidden">
+          <label>Gmail پر موصول ہونے والا OTP
+            <input name="token" inputmode="numeric" required>
+          </label>
+
+          <button class="primary">تصدیق کریں</button>
+        </form>
+
+        <p id="accountStatus" class="muted">
+          اپنا Gmail درج کریں۔
+        </p>
+
+        <button id="logout" class="secondary hidden">
+          لاگ آؤٹ
+        </button>
+      </div>
+    </section>
+
+    <section id="admin" class="tab hidden">
+      <div class="panel">
+        <h2>ایڈمن کنٹرول</h2>
+        <p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p>
+        <div id="adminListings" class="cards"></div>
+      </div>
+    </section>
+
+    <div class="notice">
+      پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔
+    </div>
+
+  </main>
+
+  <footer>RENT MATCH ©</footer>
+  `;
+
+  document.querySelectorAll('nav button').forEach(b => {
+    b.onclick = () => tab(b.dataset.tab);
+  });
+
+  $('#searchForm').onsubmit = e => {
+    e.preventDefault();
+    loadListings(new FormData(e.target));
+  };
+
   $('#postForm').onsubmit = publish;
   $('#wantedForm').onsubmit = matchWanted;
   $('#otpForm').onsubmit = sendOtp;
@@ -59,8 +214,15 @@ function shell() {
 
 function tab(name) {
   state.tab = name;
-  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
+
+  document.querySelectorAll('nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+
+  document.querySelectorAll('.tab').forEach(s => {
+    s.classList.toggle('hidden', s.id !== name);
+  });
+
   if (name === 'search') loadListings();
   if (name === 'admin') loadAdmin();
 }
@@ -71,32 +233,55 @@ function notice(msg) {
 
 function esc(s = '') {
   return String(s).replace(/[&<>"']/g, c => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
   }[c]));
 }
 
 function card(x) {
-  let imgs = (x.photo_urls || []).map(u => `<img src="${esc(u)}" alt="پراپرٹی">`).join('');
+  let imgs = (x.photo_urls || []).map(u =>
+    `<img src="${esc(u)}" alt="پراپرٹی">`
+  ).join('');
+
   const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
   const whatsapp = phone.replace(/\D/g, '');
 
-  return `<article class="card">${imgs}<div class="body">
-    <span class="pill">${esc(x.type)}</span>
-    <span class="pill">${esc(x.area)}</span>
-    <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} / ماہ</div>
-    <div>ایڈوانس: Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
-    <p>${esc(x.size || '')}</p>
-    <p>${esc(x.description || '')}</p>
-    <div class="actions">
-      <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
-      <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
-      <button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>
+  return `
+  <article class="card">
+    ${imgs}
+
+    <div class="body">
+      <span class="pill">${esc(x.type)}</span>
+      <span class="pill">${esc(x.area)}</span>
+
+      <div class="price">
+        Rs ${Number(x.rent).toLocaleString('en-PK')} / ماہ
+      </div>
+
+      <div>ایڈوانس: Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
+
+      <p>${esc(x.size || '')}</p>
+      <p>${esc(x.description || '')}</p>
+
+      <div class="actions">
+        <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
+
+        <a class="btn secondary"
+           target="_blank"
+           rel="noopener"
+           href="https://wa.me/${esc(whatsapp)}">
+           WhatsApp
+        </a>
+
+        <button class="danger" data-report="${esc(x.id)}">
+          رپورٹ کریں
+        </button>
+      </div>
     </div>
-  </div></article>`;
+  </article>`;
 }
 
 function render(items, target = 'results') {
@@ -110,15 +295,12 @@ function render(items, target = 'results') {
 }
 
 async function loadListings(form = null) {
-  if (!supabase) {
-    $('#results').innerHTML = '<div class="empty">آن لائن ڈیٹابیس سیٹ اپ کرنے کے بعد لسٹنگز یہاں نظر آئیں گی۔</div>';
-    return;
-  }
+  if (!supabase) return;
 
   let q = supabase.from('listings')
     .select('*')
     .eq('status', 'active')
-    .order('created_at', {ascending: false});
+    .order('created_at', { ascending: false });
 
   if (form) {
     let a = form.get('area')?.trim();
@@ -132,7 +314,7 @@ async function loadListings(form = null) {
     if (v) q = q.lte('advance', Number(v));
   }
 
-  const {data, error} = await q;
+  const { data, error } = await q;
 
   if (error) {
     notice(error.message);
@@ -146,23 +328,24 @@ async function loadListings(form = null) {
 async function sendOtp(e) {
   e.preventDefault();
 
-  if (!supabase) return notice('پہلے Supabase کنفیگریشن مکمل کریں۔');
+  if (!supabase) return notice('Supabase کنفیگریشن مکمل نہیں۔');
 
   const email = new FormData(e.target)
     .get('email')
     .trim()
     .toLowerCase();
 
-  const {error} = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: {shouldCreateUser: true}
+    options: { shouldCreateUser: true }
   });
 
   if (error) return notice(error.message);
 
   $('#verifyForm').classList.remove('hidden');
+
   $('#accountStatus').textContent =
-    'Gmail پر OTP بھیج دیا گیا ہے۔ اپنا کوڈ درج کریں۔';
+    'Gmail پر تصدیقی پیغام بھیج دیا گیا ہے۔';
 }
 
 async function verifyOtp(e) {
@@ -179,7 +362,7 @@ async function verifyOtp(e) {
     .get('token')
     .trim();
 
-  const {data, error} = await supabase.auth.verifyOtp({
+  const { data, error } = await supabase.auth.verifyOtp({
     email,
     token,
     type: 'email'
@@ -201,11 +384,12 @@ async function verifyOtp(e) {
 async function refreshUser() {
   if (!supabase) return;
 
-  const {data} = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+
   state.user = data.user;
 
   if (state.user) {
-    const {data: p} = await supabase
+    const { data: p } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', state.user.id)
@@ -215,7 +399,7 @@ async function refreshUser() {
 
     if ($('#accountStatus')) {
       $('#accountStatus').textContent =
-        'لاگ اِن ہیں: ' + (state.user.email || '');
+        'لاگ اِن ہیں: ' + state.user.email;
     }
 
     if ($('#logout')) {
@@ -242,26 +426,35 @@ async function logout() {
 async function publish(e) {
   e.preventDefault();
 
-  if (!supabase) return notice('پہلے Supabase کنفیگریشن مکمل کریں۔');
-  if (!state.user) return notice('پہلے Gmail OTP سے لاگ اِن کریں۔');
+  if (!supabase) return notice('Supabase کنفیگریشن مکمل نہیں۔');
+
+  if (!state.user) {
+    return notice('پہلے Gmail سے لاگ اِن کریں۔');
+  }
 
   const f = new FormData(e.target);
   const phone = String(f.get('owner_phone') || '').trim();
 
-  if (!phone) return notice('رابطہ موبائل نمبر درج کریں۔');
+  if (!phone) return notice('موبائل نمبر درج کریں۔');
 
   let photos = [];
 
   for (const file of f.getAll('photos').filter(x => x.size)) {
+
+    if (photos.length >= 5) {
+      return notice('زیادہ سے زیادہ 5 تصاویر اپ لوڈ کر سکتے ہیں۔');
+    }
+
     if (file.size > 5 * 1024 * 1024) {
       return notice('ہر تصویر 5MB سے کم ہونی چاہیے۔');
     }
 
-    const path = `${state.user.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    const path =
+      `${state.user.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
 
     const up = await supabase.storage
       .from('listing-photos')
-      .upload(path, file, {upsert: false});
+      .upload(path, file, { upsert: false });
 
     if (up.error) return notice(up.error.message);
 
@@ -272,35 +465,45 @@ async function publish(e) {
     photos.push(pub.data.publicUrl);
   }
 
-  const {error} = await supabase.from('listings').insert({
-    owner_id: state.user.id,
-    owner_phone: phone,
-    type: f.get('type'),
-    area: f.get('area').trim(),
-    rent: Number(f.get('rent')),
-    advance: Number(f.get('advance') || 0),
-    size: f.get('size'),
-    description: f.get('description'),
-    photo_urls: photos
-  });
+  const { data, error } = await supabase
+    .from('listings')
+    .insert({
+      owner_id: state.user.id,
+      owner_phone: phone,
+      type: f.get('type'),
+      area: f.get('area').trim(),
+      rent: Number(f.get('rent')),
+      advance: Number(f.get('advance') || 0),
+      size: f.get('size'),
+      description: f.get('description'),
+      photo_urls: photos,
+      status: 'active'
+    })
+    .select()
+    .single();
 
-  if (error) return notice(error.message);
+  if (error) {
+    return notice('اشتہار جمع نہیں ہوا: ' + error.message);
+  }
 
-  notice('اشتہار جمع ہوگیا۔ منظوری کے بعد نظر آئے گا۔');
+  notice('مبارک ہو! آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
 
   e.target.reset();
+
   tab('search');
+
+  await loadListings();
 }
 
 async function matchWanted(e) {
   e.preventDefault();
 
-  if (!supabase) return notice('پہلے Supabase کنفیگریشن مکمل کریں۔');
+  if (!supabase) return notice('Supabase کنفیگریشن مکمل نہیں۔');
 
   const f = new FormData(e.target);
   const a = f.get('area').trim();
 
-  const {data, error} = await supabase
+  const { data, error } = await supabase
     .from('listings')
     .select('*')
     .eq('status', 'active')
@@ -316,82 +519,14 @@ async function matchWanted(e) {
 
 async function reportListing(id) {
   if (!state.user) {
-    return notice('رپورٹ کرنے کے لیے پہلے Gmail سے لاگ اِن کریں۔');
+    return notice('رپورٹ کرنے کے لیے پہلے لاگ اِن کریں۔');
   }
 
   const reason = prompt('رپورٹ کی وجہ لکھیں:');
 
   if (!reason) return;
 
-  const {error} = await supabase.from('listing_reports').insert({
-    listing_id: id,
-    reporter_id: state.user.id,
-    reason
-  });
-
-  notice(error
-    ? 'رپورٹ جمع نہیں ہوئی: ' + error.message
-    : 'رپورٹ ایڈمن کو بھیج دی گئی۔');
-}
-
-async function loadAdmin() {
-  if (!supabase) return;
-
-  await refreshUser();
-
-  if (!state.admin) {
-    $('#adminStatus').textContent =
-      'یہ حصہ صرف مقرر کردہ ایڈمن کے لیے ہے۔';
-    return;
-  }
-
-  $('#adminStatus').textContent = 'ایڈمن موڈ فعال';
-
-  const {data, error} = await supabase
-    .from('listings')
-    .select('*')
-    .order('created_at', {ascending: false});
-
-  if (error) return notice(error.message);
-
-  $('#adminListings').innerHTML = (data || []).map(x =>
-    `${card(x)}
-    <div class="actions">
-      <button class="primary" data-approve="${esc(x.id)}">منظور / فعال</button>
-      <button class="danger" data-remove="${esc(x.id)}">ہٹائیں</button>
-    </div>`
-  ).join('');
-
-  document.querySelectorAll('[data-approve]').forEach(b => {
-    b.onclick = () => moderate(b.dataset.approve, 'active');
-  });
-
-  document.querySelectorAll('[data-remove]').forEach(b => {
-    b.onclick = () => moderate(b.dataset.remove, 'removed');
-  });
-}
-
-async function moderate(id, status) {
-  const {error} = await supabase
-    .from('listings')
-    .update({status})
-    .eq('id', id);
-
-  if (error) return notice(error.message);
-
-  loadAdmin();
-}
-
-shell();
-
-if (supabase) {
-  supabase.auth.onAuthStateChange(() => {
-    refreshUser();
-  });
-
-  refreshUser();
-  loadListings();
-} else {
-  $('#results').innerHTML =
-    '<div class="empty">پہلے .env فائل میں Supabase URL اور anon key درج کریں۔</div>';
-    }
+  const { error } = await supabase
+    .from('listing_reports')
+    .insert({
+      listing
