@@ -8,12 +8,12 @@ const supabase = url && anon ? createClient(url, anon, {
 }) : null;
 
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false };
+const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null };
 
 const translations = {
   'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
   'پراپرٹی تلاش کریں':'Find Property','اشتہار لگائیں':'Post Listing','ضرورت درج کریں':'Post Requirement',
-  'میرے اشتہارات':'My Listings','اکاؤنٹ':'Account','ایڈمن':'Admin',
+  'میرے اشتہارات':'My Listings','اطلاعات':'Notifications','اکاؤنٹ':'Account','ایڈمن':'Admin',
   'گھر یا دکان تلاش کریں':'Find a house or shop','شہر / علاقہ':'City / Area',
   'قسم':'Type','دونوں':'Both','گھر':'House','دکان':'Shop',
   'زیادہ سے زیادہ کرایہ':'Maximum Rent','زیادہ سے زیادہ ایڈوانس':'Maximum Advance',
@@ -73,6 +73,7 @@ function shell() {
       <button data-tab="post">اشتہار لگائیں</button>
       <button data-tab="wanted">ضرورت درج کریں</button>
       <button data-tab="mine">میرے اشتہارات</button>
+      <button data-tab="notifications">اطلاعات <span id="notificationCount" class="notification-count hidden">0</span></button>
       <button data-tab="account">اکاؤنٹ</button>
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
@@ -122,6 +123,7 @@ function shell() {
         <button class="primary">مطابق پراپرٹیز تلاش کریں</button>
       </form></div><div id="wantedResults" class="cards"></div></section>
     <section id="mine" class="tab hidden"><div class="panel"><h2>میرے اشتہارات</h2><p class="muted">یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔</p></div><div id="myListings" class="cards"></div></section>
+    <section id="notifications" class="tab hidden"><div class="panel"><h2>اطلاعات</h2><p class="muted">آپ کے اشتہارات پر آنے والے نئے کمنٹس کی اطلاع یہاں ملے گی۔</p><div id="notificationsList"></div></div></section>
     <section id="account" class="tab hidden"><div class="panel"><h2>اکاؤنٹ میں لاگ اِن</h2>
       <p>بغیر OTP کے اپنے اکاؤنٹ سے محفوظ طریقے سے لاگ اِن کریں۔</p>
       <div class="grid">
@@ -161,6 +163,7 @@ function tab(name) {
   if (name === 'search') loadListings();
   if (name === 'admin') loadAdmin();
   if (name === 'mine') loadMyListings();
+  if (name === 'notifications') loadNotifications();
 }
 function card(x) {
   const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
@@ -188,6 +191,11 @@ function card(x) {
           ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
           ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}
         </div>
+        <section class="comments-section" aria-label="Comments">
+          <h3>تبصرے / Comments</h3>
+          <div class="comments-list" id="comments-${esc(x.id)}"><p class="muted">کمنٹس لوڈ ہو رہے ہیں…</p></div>
+          ${state.user ? `<form class="comment-form" data-comment-form="${esc(x.id)}"><textarea name="body" maxlength="1000" required placeholder="اپنا کمنٹ لکھیں…"></textarea><button class="primary" type="submit">کمنٹ بھیجیں</button></form>` : `<p class="muted">کمنٹ کرنے کے لیے اکاؤنٹ میں لاگ اِن کریں۔</p>`}
+        </section>
       </div>
     </div>
   </article>`;
@@ -203,10 +211,12 @@ function render(items, target = 'results') {
     panel.classList.toggle('hidden', !opening);
     b.setAttribute('aria-expanded', String(opening));
     b.textContent = opening ? 'تفصیل چھپائیں ↑' : 'تفصیل دیکھیں ↓';
+    if (opening) loadComments(b.dataset.details);
   }));
   el.querySelectorAll('[data-report]').forEach(b => b.addEventListener('click', () => reportListing(b.dataset.report)));
   el.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeListing(b.dataset.remove)));
   el.querySelectorAll('[data-own-remove]').forEach(b => b.addEventListener('click', () => archiveOwnListing(b.dataset.ownRemove)));
+  el.querySelectorAll('[data-comment-form]').forEach(form => form.addEventListener('submit', e => submitComment(e, form.dataset.commentForm)));
 }
 function getPosition() {
   return new Promise(resolve => {
@@ -283,8 +293,11 @@ async function refreshUser() {
     state.admin = profile?.role === 'admin';
     if ($('#accountStatus')) $('#accountStatus').textContent = 'لاگ اِن ہیں: ' + (state.user.email || '');
     $('#logout')?.classList.remove('hidden');
-  } else if ($('#accountStatus')) {
-    $('#accountStatus').textContent = 'آپ لاگ اِن نہیں ہیں۔';
+    subscribeOwnerNotifications();
+  } else {
+    if (state.notificationChannel) { supabase.removeChannel(state.notificationChannel); state.notificationChannel = null; }
+    updateNotificationBadge(0);
+    if ($('#accountStatus')) $('#accountStatus').textContent = 'آپ لاگ اِن نہیں ہیں۔';
   }
 }
 async function logout() {
@@ -292,6 +305,8 @@ async function logout() {
   const { error } = await supabase.auth.signOut();
   if (error) return notice(error.message);
   state.user = null; state.admin = false;
+  if (state.notificationChannel) { supabase.removeChannel(state.notificationChannel); state.notificationChannel = null; }
+  updateNotificationBadge(0);
   $('#accountStatus').textContent = 'آپ لاگ آؤٹ ہیں۔';
   $('#logout').classList.add('hidden');
 }
@@ -345,6 +360,52 @@ async function reportListing(id) {
   if (error) return notice('رپورٹ جمع نہیں ہوئی: ' + error.message);
   notice('آپ کی رپورٹ موصول ہو گئی ہے۔');
 }
+async function loadComments(listingId) {
+  const target = document.getElementById('comments-' + listingId);
+  if (!target || !supabase) return;
+  const { data, error } = await supabase.from('listing_comments').select('id, author_name, body, created_at').eq('listing_id', listingId).order('created_at', { ascending: true });
+  if (error) { target.innerHTML = '<p class="muted">کمنٹس لوڈ نہیں ہو سکے۔</p>'; return; }
+  target.innerHTML = data && data.length ? data.map(c => '<article class="comment-item"><strong>' + esc(c.author_name) + '</strong><p>' + esc(c.body) + '</p><time>' + new Date(c.created_at).toLocaleString('ur-PK') + '</time></article>').join('') : '<p class="muted">ابھی کوئی کمنٹ نہیں۔ پہلا کمنٹ کریں۔</p>';
+}
+async function submitComment(event, listingId) {
+  event.preventDefault();
+  if (!state.user) return notice('کمنٹ کرنے کے لیے پہلے لاگ اِن کریں۔');
+  const form = event.currentTarget;
+  const body = String(new FormData(form).get('body') || '').trim();
+  if (!body) return;
+  const authorName = state.user.user_metadata?.full_name || state.user.user_metadata?.name || 'صارف';
+  const button = form.querySelector('button[type="submit"]'); button.disabled = true;
+  const { error } = await supabase.from('listing_comments').insert({ listing_id: listingId, author_id: state.user.id, author_name: authorName, body });
+  button.disabled = false;
+  if (error) return notice('کمنٹ بھیجا نہیں جا سکا: ' + error.message);
+  form.reset(); await loadComments(listingId);
+}
+function updateNotificationBadge(count) {
+  const badge = $('#notificationCount'); if (!badge) return;
+  badge.textContent = String(count); badge.classList.toggle('hidden', !count);
+}
+async function loadNotifications() {
+  const target = $('#notificationsList'); if (!target) return;
+  if (!state.user) { target.innerHTML = '<p class="muted">اطلاعات دیکھنے کے لیے لاگ اِن کریں۔</p>'; updateNotificationBadge(0); return; }
+  const { data, error } = await supabase.from('notifications').select('id, message, is_read, created_at').eq('recipient_id', state.user.id).order('created_at', { ascending: false }).limit(50);
+  if (error) { target.innerHTML = '<p class="muted">اطلاعات لوڈ نہیں ہو سکیں۔</p>'; return; }
+  updateNotificationBadge((data || []).filter(n => !n.is_read).length);
+  target.innerHTML = data && data.length ? data.map(n => '<button class="notification-item ' + (n.is_read ? '' : 'unread') + '" type="button" data-notification-id="' + esc(n.id) + '"><span>' + esc(n.message) + '</span><time>' + new Date(n.created_at).toLocaleString('ur-PK') + '</time></button>').join('') : '<p class="muted">ابھی کوئی نئی اطلاع نہیں۔</p>';
+  target.querySelectorAll('[data-notification-id]').forEach(button => button.addEventListener('click', async () => {
+    await supabase.from('notifications').update({ is_read: true }).eq('id', button.dataset.notificationId).eq('recipient_id', state.user.id);
+    button.classList.remove('unread'); updateNotificationBadge(target.querySelectorAll('.notification-item.unread').length);
+  }));
+}
+function subscribeOwnerNotifications() {
+  if (!supabase || !state.user) return;
+  if (state.notificationChannel) supabase.removeChannel(state.notificationChannel);
+  const ownerId = state.user.id;
+  state.notificationChannel = supabase.channel('owner-notifications-' + ownerId).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'recipient_id=eq.' + ownerId }, () => {
+    loadNotifications(); if (state.tab !== 'notifications') notice('آپ کے پراپرٹی اشتہار پر نیا کمنٹ آیا ہے۔');
+  }).subscribe();
+  loadNotifications();
+}
+
 async function loadMyListings() {
   if (!supabase || !state.user) {
     $('#myListings').innerHTML = '<div class="empty">اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں لاگ اِن کریں۔</div>';
