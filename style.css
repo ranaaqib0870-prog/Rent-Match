@@ -157,3 +157,29 @@ body.media-viewer-open{overflow:hidden}
   .earning-sidebar .earning-card strong{font-size:12px;line-height:1.55}
   .earning-sidebar .earning-note{font-size:11px;line-height:1.55}
 }
+
+
+/* Earnings section directly below the Find a house or shop entry */
+.page-layout{display:block}
+.page-content{width:100%;min-width:0}
+.earning-below-search{margin:16px 0 22px}
+.earning-below-search .earning-panel{
+  margin:0;padding:18px;border:1px solid #dce8df;border-radius:16px;
+  background:linear-gradient(180deg,#fbfefc,#fff)
+}
+.earning-below-search .earning-heading{max-width:760px}
+.earning-below-search .earning-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:15px
+}
+.earning-below-search .earning-card{
+  min-width:0;padding:15px;border:1px solid #e0e9e3;border-radius:13px;background:#fff
+}
+.earning-below-search .earning-card h3{font-size:16px;margin:9px 0 6px}
+.earning-below-search .earning-card p{font-size:13px;line-height:1.55;color:#607368}
+@media(max-width:700px){
+  .earning-below-search{margin:12px 0 18px}
+  .earning-below-search .earning-panel{padding:13px}
+  .earning-below-search .earning-heading h2{font-size:17px}
+  .earning-below-search .earning-grid{grid-template-columns:1fr;gap:9px}
+  .earning-below-search .earning-card{padding:12px}
+}
