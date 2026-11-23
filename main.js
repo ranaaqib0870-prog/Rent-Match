@@ -187,7 +187,7 @@ function mediaButton(url, index, cover = false) {
   const preview = video ? `<video class="${cover ? 'property-cover' : 'extra-media'}" src="${esc(url)}#t=0.1" muted playsinline preload="metadata"></video><span class="media-play-icon">▶</span>` : `<img class="${cover ? 'property-cover' : 'extra-media'}" src="${esc(url)}" alt="پراپرٹی کی تصویر" loading="lazy">`;
   return `<button type="button" class="media-open ${cover ? 'media-open-cover' : ''}" data-open-media="${esc(url)}" data-media-type="${video ? 'video' : 'image'}" aria-label="میڈیا کھولیں">${preview}</button>`;
 }
-function card(x) {
+function card(x, showOwnerDelete = false) {
   const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
   const cover = photos[0] ? mediaButton(photos[0], 0, true) : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
   const videoCount = photos.filter(isVideoMedia).length;
@@ -204,7 +204,7 @@ function card(x) {
       <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} <small>/ ماہ</small></div>
       <div class="property-summary">${esc(x.size || 'مزید تفصیل کے لیے کلک کریں')}</div>
       <button class="primary details-toggle" type="button" data-details="${esc(x.id)}" aria-expanded="false">تفصیل دیکھیں ↓</button>
-      ${state.myListings ? `<button class="danger owner-delete-btn" type="button" data-own-remove="${esc(x.id)}">اشتہار ڈیلیٹ کریں</button>` : ''}
+      ${showOwnerDelete ? `<button class="danger owner-delete-btn" type="button" data-own-remove="${esc(x.id)}">🗑 اشتہار ڈیلیٹ کریں</button>` : ''}
       <div class="property-details hidden" id="details-${esc(x.id)}">
         <div class="detail-line"><strong>ایڈوانس:</strong> Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
         ${x.description ? `<p>${esc(x.description)}</p>` : ''}
@@ -227,7 +227,7 @@ function card(x) {
 function render(items, target = 'results') {
   const el = $('#' + target);
   if (!el) return;
-  el.innerHTML = items?.length ? items.map(card).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
+  el.innerHTML = items?.length ? items.map(item => card(item, target === 'myListings')).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
   el.querySelectorAll('[data-open-media]').forEach(b => b.addEventListener('click', () => openMedia(b.dataset.openMedia, b.dataset.mediaType)));
   el.querySelectorAll('[data-details]').forEach(b => b.addEventListener('click', () => {
     const panel = document.getElementById('details-' + b.dataset.details);
