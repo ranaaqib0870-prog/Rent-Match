@@ -65,3 +65,7 @@
 .media-viewer-content img,.media-viewer-content video{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 .media-viewer-close{position:absolute;top:12px;right:16px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#111827;font-size:30px;line-height:1;cursor:pointer}
 body.media-viewer-open{overflow:hidden}
+
+
+.call-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:42px;padding:8px;min-width:44px}
+.call-icon-btn svg{display:block;width:23px;height:23px;fill:currentColor}
