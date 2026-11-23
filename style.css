@@ -71,3 +71,13 @@ body.media-viewer-open{overflow:hidden}
 .call-icon-btn svg{display:block;width:23px;height:23px;fill:currentColor}
 
 .whatsapp-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:42px;padding:8px;min-width:44px;background:#e7f7ed;color:#16834a}.whatsapp-icon-btn svg{display:block;width:25px;height:25px;fill:currentColor}
+
+/* Monetization plans: featured listings, agent packages and local business ads */
+.earning-panel{margin:22px 0;padding:22px;border:1px solid #d5e8db;border-radius:18px;background:linear-gradient(135deg,#f5fbf6,#fff)}
+.earning-heading h2{margin:6px 0;color:#104d38}.earning-heading p,.earning-note{color:#64776d;font-size:13px;line-height:1.7}
+.earning-heading .eyebrow{font-size:11px;letter-spacing:1.5px;font-weight:900;color:#23815d}
+.earning-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:16px}
+.earning-card{background:#fff;border:1px solid #dce7df;border-radius:14px;padding:16px;box-shadow:0 5px 18px #17352a08}
+.earning-card h3{margin:9px 0 6px;font-size:17px}.earning-card p,.earning-card li,.earning-card strong{font-size:13px;line-height:1.7}
+.earning-card ul{padding-inline-start:20px;margin:8px 0}.earning-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7f2eb;color:#126b4b;font-size:12px;font-weight:800}
+.featured-plan{border-color:#b9d9c5;background:#fbfffc}.earning-note{margin:12px 0 0}
