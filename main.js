@@ -123,7 +123,8 @@ function shell() {
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
   </main><footer>RENT MATCH ©</footer>`;
 
-  const languageSelect = $('#languageSelect');\n  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';\n  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));\n  applyLanguage(languageSelect.value);\n  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  const languageSelect = $('#languageSelect');
+  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';\n  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));\n  applyLanguage(languageSelect.value);\n  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
