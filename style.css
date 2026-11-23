@@ -35,3 +35,18 @@
 .search-intro p{color:#557466;margin:0 0 16px}
 .search-intro button{min-width:220px}
 .search-panel{margin-top:14px;scroll-margin-top:12px}
+
+
+/* Public listing comments and owner notifications */
+.comments-section{margin-top:18px;padding-top:14px;border-top:1px solid #e5e7eb}
+.comments-section h3{font-size:1.05rem;margin:0 0 10px}
+.comments-list{display:grid;gap:9px;margin-bottom:12px}
+.comment-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px}
+.comment-item p{margin:5px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.comment-item time,.notification-item time{display:block;color:#64748b;font-size:.78rem;margin-top:4px}
+.comment-form{display:grid;gap:8px}
+.comment-form textarea{width:100%;min-height:76px;resize:vertical;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit}
+.comment-form button{justify-self:start}
+.notification-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:20px;background:#dc2626;color:#fff;font-size:12px;margin-inline-start:4px}
+.notification-item{display:block;width:100%;text-align:start;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin:8px 0;font:inherit;cursor:pointer}
+.notification-item.unread{border-color:#86b7fe;background:#eff6ff}
