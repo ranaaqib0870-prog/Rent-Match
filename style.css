@@ -183,3 +183,39 @@ body.media-viewer-open{overflow:hidden}
   .earning-below-search .earning-grid{grid-template-columns:1fr;gap:9px}
   .earning-below-search .earning-card{padding:12px}
 }
+
+
+/* Compact earning options so property listings appear sooner */
+.earning-below-search{margin:9px 0 13px}
+.earning-below-search .earning-panel{padding:12px 14px;border-radius:13px}
+.earning-below-search .earning-heading .eyebrow{font-size:9px;letter-spacing:1px}
+.earning-below-search .earning-heading h2{font-size:17px;line-height:1.35;margin:3px 0}
+.earning-below-search .earning-heading p{font-size:11px;line-height:1.4;margin:3px 0 0}
+.earning-below-search .earning-grid{gap:9px;margin-top:9px}
+.earning-below-search .earning-card{padding:10px;border-radius:11px}
+.earning-below-search .earning-badge{font-size:10px;padding:3px 7px}
+.earning-below-search .earning-card h3{font-size:14px;line-height:1.3;margin:5px 0 3px}
+.earning-below-search .earning-card p,
+.earning-below-search .earning-card li,
+.earning-below-search .earning-card strong{font-size:11px;line-height:1.4}
+.earning-below-search .earning-card p{margin:3px 0}
+.earning-below-search .earning-card ul{margin:4px 0;padding-inline-start:17px}
+.earning-below-search .earning-note{font-size:10px;line-height:1.35;margin:7px 0 0}
+@media(max-width:700px){
+  .earning-below-search{margin:8px 0 12px}
+  .earning-below-search .earning-panel{padding:10px;border-radius:12px}
+  .earning-below-search .earning-heading h2{font-size:15px}
+  .earning-below-search .earning-heading p{font-size:10px}
+  .earning-below-search .earning-grid{grid-template-columns:1fr;gap:7px;margin-top:8px}
+  .earning-below-search .earning-card{
+    display:grid;grid-template-columns:105px minmax(0,1fr);column-gap:9px;align-items:center;
+    padding:8px 9px;min-height:0
+  }
+  .earning-below-search .earning-badge{grid-column:1;grid-row:1;font-size:9px;justify-self:start}
+  .earning-below-search .earning-card h3{grid-column:2;grid-row:1;font-size:12px;margin:0}
+  .earning-below-search .earning-card p{grid-column:1 / -1;font-size:10px;line-height:1.3;margin:4px 0 0}
+  .earning-below-search .earning-card ul{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:3px 12px;margin:4px 0 0;padding:0;list-style:none}
+  .earning-below-search .earning-card li{font-size:10px;line-height:1.25}
+  .earning-below-search .earning-card strong{grid-column:1 / -1;font-size:10px;margin-top:3px}
+  .earning-below-search .earning-note{font-size:9px;line-height:1.3;margin-top:6px}
+}
