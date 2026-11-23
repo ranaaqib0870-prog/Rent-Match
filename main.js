@@ -45,6 +45,7 @@ function shell() {
         <label>سائز / کمرے<input name="size" placeholder="5 مرلہ، 2 کمرے"></label>
         <label>رابطہ موبائل نمبر<input name="owner_phone" type="tel" required></label>
         <label>تصاویر (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/*" multiple></label>
+        <label class="wide"><span><input name="use_current_location" type="checkbox" style="display:inline;width:auto"> یہ پراپرٹی میری موجودہ لوکیشن پر ہے</span></label>
         <label class="wide">تفصیل<textarea name="description"></textarea></label>
         <button class="primary">اشتہار شائع کریں</button>
       </form><p class="muted">اشتہار لگانے کے لیے پہلے Gmail سے لاگ اِن کریں۔ اشتہار جمع ہوتے ہی شائع ہوگا۔</p>
@@ -209,7 +210,7 @@ async function publish(e) {
     if (uploadError) return notice('تصویر اپ لوڈ نہیں ہوئی: ' + uploadError.message);
     photos.push(supabase.storage.from('listing-photos').getPublicUrl(path).data.publicUrl);
   }
-  const coords = state.location || await getPosition();
+  const coords = f.get("use_current_location") === "on" ? (state.location || await getPosition()) : null;
   const payload = {
     owner_id: state.user.id, owner_phone: phone, type: f.get('type'),
     area: String(f.get('area') || '').trim(), rent: Number(f.get('rent')),
