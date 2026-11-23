@@ -1,1 +1,28 @@
 *{box-sizing:border-box}body{margin:0;background:#f3f7f4;color:#17352a;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}header{background:linear-gradient(120deg,#0d533c,#219568);color:#fff;padding:22px 15px}.wrap{max-width:1050px;margin:auto}.brand{font-size:30px;font-weight:900}header p{margin:3px 0 14px}nav{display:flex;gap:8px;flex-wrap:wrap}button,.btn{font:inherit;font-weight:750;border:0;border-radius:10px;padding:11px 14px;cursor:pointer}nav button{background:#ffffff25;color:#fff;border:1px solid #ffffff55}nav button.active{background:#fff;color:#126b4b}main{padding:18px 14px}.panel{background:#fff;border:1px solid #dce7df;border-radius:16px;padding:18px;margin-bottom:15px}h2{margin:0 0 14px;font-size:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}label{font-size:14px;font-weight:750}input,select,textarea{display:block;width:100%;margin-top:5px;padding:11px;border:1px solid #cbd9d0;border-radius:9px;font:inherit}textarea{min-height:75px}.wide{grid-column:1/-1}.primary{background:#126b4b;color:#fff}.secondary{background:#e7f2eb;color:#126b4b}.danger{background:#fff0ef;color:#a52d25}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}.card{background:#fff;border:1px solid #dce7df;border-radius:14px;overflow:hidden}.card img{width:100%;height:145px;object-fit:cover}.body{padding:13px}.price{font-size:21px;color:#126b4b;font-weight:900;margin:7px 0}.pill{display:inline-block;background:#e7f2eb;color:#176346;border-radius:20px;padding:4px 9px;font-size:12px;margin:2px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{text-decoration:none;display:inline-block}.empty,.notice{padding:18px;border-radius:12px;background:#fff;border:1px dashed #bfd0c4;color:#687b71}.notice{margin-top:14px;line-height:1.7}.muted,footer{color:#687b71;font-size:13px}.hidden{display:none!important}footer{text-align:center;padding:20px}@media(max-width:500px){.brand{font-size:26px}.panel{padding:14px}}\n.brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.language-label{color:#fff;display:flex;align-items:center;gap:7px}.language-label select{width:auto;margin:0;background:#fff;color:#17352a;padding:7px;border-radius:8px}@media(max-width:500px){.brand-row{align-items:flex-start;flex-wrap:wrap}}\n
+/* Professional property search and listing cards */
+.search-intro{padding:24px 20px 18px;margin-bottom:14px;border-radius:18px;background:linear-gradient(120deg,#e4f3e9,#f7fbf8);border:1px solid #d5e8db}
+.search-intro .eyebrow{font-size:11px;letter-spacing:2px;font-weight:900;color:#23815d}
+.search-intro h1{font-size:clamp(23px,4vw,34px);margin:6px 0;color:#104d38}
+.search-intro p{margin:0;color:#557466}
+.search-panel{box-shadow:0 8px 24px #153e2910}
+.search-panel h2{font-size:18px}
+.results-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 2px 12px}
+.results-heading h2{margin:0;font-size:21px}
+.results-heading span{font-size:12px;color:#718278}
+.property-card{box-shadow:0 5px 18px #17352a0b;transition:transform .18s,box-shadow .18s}
+.property-card:hover{transform:translateY(-2px);box-shadow:0 9px 24px #17352a16}
+.property-media{position:relative;background:#eaf2ec}
+.property-cover{display:block;width:100%;height:185px;object-fit:cover}
+.property-placeholder{height:185px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#6b8b79;font-size:36px}
+.property-placeholder span{font-size:12px}
+.photo-count{position:absolute;bottom:10px;left:10px;background:#142b20c9;color:#fff;border-radius:20px;padding:5px 9px;font-size:11px}
+.property-tags{display:flex;flex-wrap:wrap;gap:4px}
+.property-card .price{font-size:24px;margin:10px 0 4px}
+.property-card .price small{font-size:12px;font-weight:600;color:#718278}
+.property-summary{font-size:13px;color:#64776d;min-height:22px;margin-bottom:12px}
+.details-toggle{width:100%;padding:10px}
+.property-details{border-top:1px solid #e7eee9;margin-top:13px;padding-top:12px;line-height:1.7}
+.detail-line{font-size:14px}
+.extra-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.extra-photos img{width:100%;height:110px;object-fit:cover;border-radius:9px}
+@media(max-width:500px){.search-intro{padding:20px 15px}.results-heading{align-items:flex-start;flex-direction:column;gap:3px}.property-cover,.property-placeholder{height:165px}}
