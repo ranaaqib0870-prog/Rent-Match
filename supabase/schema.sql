@@ -68,11 +68,10 @@ alter table public.listings enable row level security;
 alter table public.listing_reports enable row level security;
 
 drop policy if exists "Users can read own profile and admins can read all" on public.profiles;
-create policy "Users can read own profile and admins can read all"
+drop policy if exists "Users can read own profile" on public.profiles;
+create policy "Users can read own profile"
 on public.profiles for select to authenticated
-using (id = (select auth.uid()) or exists (
-  select 1 from public.profiles p where p.id = (select auth.uid()) and p.role = 'admin'
-));
+using (id = (select auth.uid()));
 
 drop policy if exists "Users can update own email only" on public.profiles;
 create policy "Users can update own email only"
