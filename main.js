@@ -124,7 +124,10 @@ function shell() {
   </main><footer>RENT MATCH ©</footer>`;
 
   const languageSelect = $('#languageSelect');
-  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';\n  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));\n  applyLanguage(languageSelect.value);\n  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';
+  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));
+  applyLanguage(languageSelect.value);
+  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
