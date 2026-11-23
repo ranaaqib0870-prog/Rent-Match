@@ -182,6 +182,7 @@ function card(x) {
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
   if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);
   else if (whatsapp.startsWith('3') && whatsapp.length === 10) whatsapp = '92' + whatsapp;
+  const whatsappHref = whatsapp ? 'https://wa.me/' + whatsapp : '';
   return `<article class="card property-card">
     <div class="property-media">${cover}${photos.length > 1 ? `<span class="photo-count">📷 ${photos.length} میڈیا${videoCount ? ` · ${videoCount} ویڈیو` : ''}</span>` : ''}</div>
     <div class="body">
@@ -195,7 +196,7 @@ function card(x) {
         ${photos.length > 1 ? `<div class="extra-photos">${photos.slice(1).map((u, i) => mediaButton(u, i + 1)).join('')}</div>` : ''}
         <div class="actions">
           <a class="btn primary call-icon-btn" href="tel:${esc(phone)}" aria-label="کال کریں" title="کال کریں"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.32.56 3.58.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.6 21 3 13.4 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.19 2.46.56 3.58a1 1 0 0 1-.24 1.02z"/></svg></a>
-          <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
+          <a class="btn secondary whatsapp-icon-btn" target="_blank" rel="noopener noreferrer" href="${esc(whatsappHref)}" aria-label="WhatsApp پر رابطہ کریں" title="WhatsApp پر رابطہ کریں"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.3ZM12.2 21.6c-1.7 0-3.4-.5-4.8-1.3l-.3-.2-3.9 1 1-3.8-.2-.4a9.7 9.7 0 1 1 8.2 4.7Zm5.3-7.3c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.2-.5-2.3-1.5-.9-.8-1.5-1.7-1.7-2-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6-.1-.2-.7-1.6-.9-2.1-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.5s1.1 2.8 1.3 3c.2.2 2.2 3.4 5.4 4.8.8.4 1.4.6 1.9.7.8.3 1.5.2 2 .1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z"/></svg></a>
           ${x.owner_id !== state.user?.id ? `<button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>` : ''}
           ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
           ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}
