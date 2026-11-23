@@ -107,7 +107,7 @@ function shell() {
         <label>ایڈوانس<input name="advance" type="number" min="0" value="0"></label>
         <label>سائز / کمرے<input name="size" placeholder="5 مرلہ، 2 کمرے"></label>
         <label>رابطہ موبائل نمبر<input name="owner_phone" type="tel" required></label>
-        <label>تصاویر (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+        <label>تصاویر یا ویڈیوز (زیادہ سے زیادہ 5)<input name="photos" type="file" accept="image/*,video/mp4,video/webm,video/quicktime" multiple></label>
         <label class="wide"><span><input name="use_current_location" type="checkbox" style="display:inline;width:auto"> یہ پراپرٹی میری موجودہ لوکیشن پر ہے</span></label>
         <label class="wide">تفصیل<textarea name="description"></textarea></label>
         <button class="primary">اشتہار شائع کریں</button>
@@ -134,7 +134,7 @@ function shell() {
     </div></section>
     <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminListings" class="cards"></div></div></section>
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
-  </main><footer>RENT MATCH ©</footer>`;
+  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><footer>RENT MATCH ©</footer>`;
 
   const languageSelect = $('#languageSelect');
   if (languageSelect) {
@@ -143,6 +143,8 @@ function shell() {
     applyLanguage(languageSelect.value);
   }
   document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  $('#mediaViewer').addEventListener('click', e => { if (e.target.id === 'mediaViewer' || e.target.closest('.media-viewer-close')) closeMedia(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMedia(); });
   $('#openPropertySearch').addEventListener('click', () => {
     $('#propertySearchPanel').classList.remove('hidden');
     $('#openPropertySearch').classList.add('hidden');
@@ -165,16 +167,23 @@ function tab(name) {
   if (name === 'mine') loadMyListings();
   if (name === 'notifications') loadNotifications();
 }
+function isVideoMedia(url) { return /\.(mp4|webm|mov)(\?|$)/i.test(String(url || '')); }
+function mediaButton(url, index, cover = false) {
+  const video = isVideoMedia(url);
+  const preview = video ? `<video class="${cover ? 'property-cover' : 'extra-media'}" src="${esc(url)}#t=0.1" muted playsinline preload="metadata"></video><span class="media-play-icon">▶</span>` : `<img class="${cover ? 'property-cover' : 'extra-media'}" src="${esc(url)}" alt="پراپرٹی کی تصویر" loading="lazy">`;
+  return `<button type="button" class="media-open ${cover ? 'media-open-cover' : ''}" data-open-media="${esc(url)}" data-media-type="${video ? 'video' : 'image'}" aria-label="میڈیا کھولیں">${preview}</button>`;
+}
 function card(x) {
   const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
-  const cover = photos[0] ? `<img class="property-cover" src="${esc(photos[0])}" alt="پراپرٹی کی تصویر" loading="lazy">` : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
+  const cover = photos[0] ? mediaButton(photos[0], 0, true) : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
+  const videoCount = photos.filter(isVideoMedia).length;
   const phone = String(x.owner_phone || '').replace(/[^\\d+]/g, '');
   let whatsapp = phone.replace(/\\D/g, '');
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
   if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);
   else if (whatsapp.startsWith('3') && whatsapp.length === 10) whatsapp = '92' + whatsapp;
   return `<article class="card property-card">
-    <div class="property-media">${cover}${photos.length > 1 ? `<span class="photo-count">📷 ${photos.length} تصاویر</span>` : ''}</div>
+    <div class="property-media">${cover}${photos.length > 1 ? `<span class="photo-count">📷 ${photos.length} میڈیا${videoCount ? ` · ${videoCount} ویڈیو` : ''}</span>` : ''}</div>
     <div class="body">
       <div class="property-tags"><span class="pill">${esc(x.type)}</span><span class="pill">📍 ${esc(x.area)}</span></div>
       <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} <small>/ ماہ</small></div>
@@ -183,7 +192,7 @@ function card(x) {
       <div class="property-details hidden" id="details-${esc(x.id)}">
         <div class="detail-line"><strong>ایڈوانس:</strong> Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
         ${x.description ? `<p>${esc(x.description)}</p>` : ''}
-        ${photos.length > 1 ? `<div class="extra-photos">${photos.slice(1).map(u => `<img src="${esc(u)}" alt="پراپرٹی کی اضافی تصویر" loading="lazy">`).join('')}</div>` : ''}
+        ${photos.length > 1 ? `<div class="extra-photos">${photos.slice(1).map((u, i) => mediaButton(u, i + 1)).join('')}</div>` : ''}
         <div class="actions">
           <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
           <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
@@ -204,6 +213,7 @@ function render(items, target = 'results') {
   const el = $('#' + target);
   if (!el) return;
   el.innerHTML = items?.length ? items.map(card).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
+  el.querySelectorAll('[data-open-media]').forEach(b => b.addEventListener('click', () => openMedia(b.dataset.openMedia, b.dataset.mediaType)));
   el.querySelectorAll('[data-details]').forEach(b => b.addEventListener('click', () => {
     const panel = document.getElementById('details-' + b.dataset.details);
     if (!panel) return;
@@ -317,10 +327,13 @@ async function publish(e) {
   const f = new FormData(e.target), phone = String(f.get('owner_phone') || '').trim();
   if (!phone) return notice('موبائل نمبر درج کریں۔');
   const files = f.getAll('photos').filter(file => file instanceof File && file.size);
-  if (files.length > 5) return notice('زیادہ سے زیادہ 5 تصاویر اپ لوڈ کر سکتے ہیں۔');
+  if (files.length > 5) return notice('زیادہ سے زیادہ 5 تصاویر یا ویڈیوز اپ لوڈ کر سکتے ہیں۔');
   const photos = [];
   for (const file of files) {
-    if (file.size > 5 * 1024 * 1024) return notice('ہر تصویر 5MB سے کم ہونی چاہیے۔');
+    const isVideo = file.type.startsWith('video/');
+    if (!file.type.startsWith('image/') && !isVideo) return notice('صرف تصویر یا ویڈیو فائل اپ لوڈ کریں۔');
+    if (isVideo && file.size > 25 * 1024 * 1024) return notice('ہر ویڈیو 25MB سے کم ہونی چاہیے۔');
+    if (!isVideo && file.size > 5 * 1024 * 1024) return notice('ہر تصویر 5MB سے کم ہونی چاہیے۔');
     const path = `${state.user.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
     const { error: uploadError } = await supabase.storage.from('listing-photos').upload(path, file);
     if (uploadError) return notice('تصویر اپ لوڈ نہیں ہوئی: ' + uploadError.message);
@@ -359,6 +372,21 @@ async function reportListing(id) {
   });
   if (error) return notice('رپورٹ جمع نہیں ہوئی: ' + error.message);
   notice('آپ کی رپورٹ موصول ہو گئی ہے۔');
+}
+function openMedia(url, type) {
+  const viewer = $('#mediaViewer'), content = $('#mediaViewerContent');
+  if (!viewer || !content) return;
+  content.innerHTML = type === 'video' ? `<video src="${esc(url)}" controls autoplay playsinline></video>` : `<img src="${esc(url)}" alt="پراپرٹی کی بڑی تصویر">`;
+  viewer.classList.remove('hidden');
+  document.body.classList.add('media-viewer-open');
+}
+function closeMedia() {
+  const viewer = $('#mediaViewer'), content = $('#mediaViewerContent');
+  if (!viewer || !content) return;
+  content.querySelector('video')?.pause();
+  content.innerHTML = '';
+  viewer.classList.add('hidden');
+  document.body.classList.remove('media-viewer-open');
 }
 async function loadComments(listingId) {
   const target = document.getElementById('comments-' + listingId);
