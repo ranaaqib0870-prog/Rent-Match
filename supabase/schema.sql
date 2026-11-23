@@ -86,3 +86,10 @@ CREATE POLICY "signed-in users create active listings"
 
 CREATE INDEX IF NOT EXISTS listings_owner_id_idx ON public.listings(owner_id);
 CREATE INDEX IF NOT EXISTS listing_reports_reporter_id_idx ON public.listing_reports(reporter_id);
+
+
+DROP POLICY IF EXISTS "owners archive own active listings" ON public.listings;
+CREATE POLICY "owners archive own active listings"
+  ON public.listings FOR UPDATE TO authenticated
+  USING (owner_id = (select auth.uid()) AND status = 'active')
+  WITH CHECK (owner_id = (select auth.uid()) AND status = 'removed');
