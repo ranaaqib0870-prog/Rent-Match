@@ -187,7 +187,7 @@ function card(x) {
         <div class="actions">
           <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
           <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
-          <button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>
+          ${x.owner_id !== state.user?.id ? `<button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>` : ''}
           ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
           ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}
         </div>
