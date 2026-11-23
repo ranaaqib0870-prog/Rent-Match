@@ -86,7 +86,7 @@ function shell() {
         <label>زیادہ سے زیادہ ایڈوانس<input name="advance" type="number" min="0"></label>
         <button class="primary">تلاش کریں</button>
         <button type="button" id="nearMe" class="secondary">میری موجودہ لوکیشن</button>
-      </form></div><div id="results" class="cards"></div></section>
+      </form></div><div class="results-heading"><h2>دستیاب پراپرٹیز</h2><span>تفصیل دیکھنے کے لیے کارڈ کھولیں</span></div><div id="results" class="cards"></div></section>
     <section id="post" class="tab hidden"><div class="panel"><h2>پراپرٹی کا اشتہار لگائیں</h2>
       <form id="postForm" class="grid">
         <label>قسم<select name="type"><option>گھر</option><option>دکان</option></select></label>
@@ -147,28 +147,47 @@ function tab(name) {
   if (name === 'mine') loadMyListings();
 }
 function card(x) {
-  const images = (x.photo_urls || []).map(u => `<img src="${esc(u)}" alt="پراپرٹی">`).join('');
-  const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
-  let whatsapp = phone.replace(/\D/g, '');
+  const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
+  const cover = photos[0] ? `<img class="property-cover" src="${esc(photos[0])}" alt="پراپرٹی کی تصویر" loading="lazy">` : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
+  const phone = String(x.owner_phone || '').replace(/[^\\d+]/g, '');
+  let whatsapp = phone.replace(/\\D/g, '');
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
   if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);
   else if (whatsapp.startsWith('3') && whatsapp.length === 10) whatsapp = '92' + whatsapp;
-  return `<article class="card">${images}<div class="body">
-    <span class="pill">${esc(x.type)}</span><span class="pill">${esc(x.area)}</span>
-    <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} / ماہ</div>
-    <div>ایڈوانس: Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
-    <p>${esc(x.size || '')}</p><p>${esc(x.description || '')}</p>
-    <div class="actions"><a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
-    <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
-    <button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>
-    ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
-    ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}</div>
-  </div></article>`;
+  return `<article class="card property-card">
+    <div class="property-media">${cover}${photos.length > 1 ? `<span class="photo-count">📷 ${photos.length} تصاویر</span>` : ''}</div>
+    <div class="body">
+      <div class="property-tags"><span class="pill">${esc(x.type)}</span><span class="pill">📍 ${esc(x.area)}</span></div>
+      <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} <small>/ ماہ</small></div>
+      <div class="property-summary">${esc(x.size || 'مزید تفصیل کے لیے کلک کریں')}</div>
+      <button class="primary details-toggle" type="button" data-details="${esc(x.id)}" aria-expanded="false">تفصیل دیکھیں ↓</button>
+      <div class="property-details hidden" id="details-${esc(x.id)}">
+        <div class="detail-line"><strong>ایڈوانس:</strong> Rs ${Number(x.advance || 0).toLocaleString('en-PK')}</div>
+        ${x.description ? `<p>${esc(x.description)}</p>` : ''}
+        ${photos.length > 1 ? `<div class="extra-photos">${photos.slice(1).map(u => `<img src="${esc(u)}" alt="پراپرٹی کی اضافی تصویر" loading="lazy">`).join('')}</div>` : ''}
+        <div class="actions">
+          <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
+          <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
+          <button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>
+          ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
+          ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}
+        </div>
+      </div>
+    </div>
+  </article>`;
 }
 function render(items, target = 'results') {
   const el = $('#' + target);
   if (!el) return;
   el.innerHTML = items?.length ? items.map(card).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
+  el.querySelectorAll('[data-details]').forEach(b => b.addEventListener('click', () => {
+    const panel = document.getElementById('details-' + b.dataset.details);
+    if (!panel) return;
+    const opening = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !opening);
+    b.setAttribute('aria-expanded', String(opening));
+    b.textContent = opening ? 'تفصیل چھپائیں ↑' : 'تفصیل دیکھیں ↓';
+  }));
   el.querySelectorAll('[data-report]').forEach(b => b.addEventListener('click', () => reportListing(b.dataset.report)));
   el.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeListing(b.dataset.remove)));
   el.querySelectorAll('[data-own-remove]').forEach(b => b.addEventListener('click', () => archiveOwnListing(b.dataset.ownRemove)));
