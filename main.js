@@ -177,8 +177,8 @@ function card(x) {
   const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
   const cover = photos[0] ? mediaButton(photos[0], 0, true) : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
   const videoCount = photos.filter(isVideoMedia).length;
-  const phone = String(x.owner_phone || '').replace(/[^\\d+]/g, '');
-  let whatsapp = phone.replace(/\\D/g, '');
+  const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
+  let whatsapp = phone.replace(/\D/g, '');
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
   if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);
   else if (whatsapp.startsWith('3') && whatsapp.length === 10) whatsapp = '92' + whatsapp;
