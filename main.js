@@ -8,7 +8,7 @@ const supabase = url && anon ? createClient(url, anon, {
 }) : null;
 
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false, location: null };
+const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false };
 
 function notice(message) { alert(message); }
 function esc(value = '') {
@@ -22,6 +22,7 @@ function shell() {
       <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
       <button data-tab="post">اشتہار لگائیں</button>
       <button data-tab="wanted">ضرورت درج کریں</button>
+      <button data-tab="mine">میرے اشتہارات</button>
       <button data-tab="account">اکاؤنٹ</button>
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
@@ -59,6 +60,7 @@ function shell() {
         <label class="wide">اضافی شرائط<textarea name="notes"></textarea></label>
         <button class="primary">مطابق پراپرٹیز تلاش کریں</button>
       </form></div><div id="wantedResults" class="cards"></div></section>
+    <section id="mine" class="tab hidden"><div class="panel"><h2>میرے اشتہارات</h2><p class="muted">یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔</p></div><div id="myListings" class="cards"></div></section>
     <section id="account" class="tab hidden"><div class="panel"><h2>Gmail سے لاگ اِن</h2>
       <form id="otpForm" class="grid"><label>Gmail ایڈریس<input name="email" type="email" required></label><button class="primary">Gmail پر OTP بھیجیں</button></form>
       <form id="verifyForm" class="grid hidden"><label>ای میل میں موصول ہونے والا 6 ہندسوں کا کوڈ<input name="token" inputmode="numeric" required></label><button class="primary">تصدیق کریں</button></form>
@@ -83,6 +85,7 @@ function tab(name) {
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
   if (name === 'search') loadListings();
   if (name === 'admin') loadAdmin();
+  if (name === 'mine') loadMyListings();
 }
 function card(x) {
   const images = (x.photo_urls || []).map(u => `<img src="${esc(u)}" alt="پراپرٹی">`).join('');
@@ -99,7 +102,8 @@ function card(x) {
     <div class="actions"><a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
     <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
     <button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>
-    ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}</div>
+    ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
+    ${state.myListings && x.status === 'active' ? `<button class="danger" data-own-remove="${esc(x.id)}">میرا اشتہار ختم کریں</button>` : ''}</div>
   </div></article>`;
 }
 function render(items, target = 'results') {
@@ -108,6 +112,7 @@ function render(items, target = 'results') {
   el.innerHTML = items?.length ? items.map(card).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
   el.querySelectorAll('[data-report]').forEach(b => b.addEventListener('click', () => reportListing(b.dataset.report)));
   el.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeListing(b.dataset.remove)));
+  el.querySelectorAll('[data-own-remove]').forEach(b => b.addEventListener('click', () => archiveOwnListing(b.dataset.ownRemove)));
 }
 function getPosition() {
   return new Promise(resolve => {
@@ -254,6 +259,28 @@ async function reportListing(id) {
   });
   if (error) return notice('رپورٹ جمع نہیں ہوئی: ' + error.message);
   notice('آپ کی رپورٹ موصول ہو گئی ہے۔');
+}
+async function loadMyListings() {
+  if (!supabase || !state.user) {
+    $('#myListings').innerHTML = '<div class="empty">اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں Gmail سے لاگ اِن کریں۔</div>';
+    return;
+  }
+  await refreshUser();
+  const { data, error } = await supabase.from('listings').select('*')
+    .eq('owner_id', state.user.id).order('created_at', { ascending: false });
+  if (error) return notice('آپ کے اشتہارات لوڈ نہیں ہوئے: ' + error.message);
+  state.myListings = true;
+  render(data || [], 'myListings');
+  state.myListings = false;
+}
+async function archiveOwnListing(id) {
+  if (!state.user) return notice('پہلے لاگ اِن کریں۔');
+  if (!confirm('کیا آپ یہ اشتہار ختم کرنا چاہتے ہیں؟ یہ عام تلاش میں نظر نہیں آئے گا۔')) return;
+  const { error } = await supabase.from('listings').update({ status: 'removed' })
+    .eq('id', id).eq('owner_id', state.user.id);
+  if (error) return notice('اشتہار ختم نہیں ہوا: ' + error.message);
+  notice('آپ کا اشتہار ختم کر دیا گیا ہے۔');
+  await loadMyListings();
 }
 async function loadAdmin() {
   if (!supabase || !state.user) { $('#adminStatus').textContent = 'ایڈمن دیکھنے کے لیے لاگ اِن کریں۔'; return; }
