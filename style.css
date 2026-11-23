@@ -127,3 +127,33 @@ body.media-viewer-open{overflow:hidden}
   .earning-sidebar .earning-panel{padding:6px}
   .earning-sidebar .earning-card{padding:6px}
 }
+
+
+/* Refined responsive layout: spacious feed and clean promotion cards */
+.earning-sidebar .earning-panel{box-shadow:0 8px 26px rgba(20,60,42,.08);border:1px solid #dfe9e2}
+.earning-sidebar .earning-card{border:1px solid #e2ebe5;border-radius:13px;background:#fff}
+.earning-sidebar .featured-plan{border:1px solid #b8d8c5;background:linear-gradient(145deg,#f4fbf6,#fff)}
+.earning-sidebar .earning-badge{display:inline-flex;align-items:center;border-radius:20px;padding:5px 9px;background:#eaf5ee;color:#176b4b;font-size:11px;font-weight:800}
+.earning-sidebar .earning-card h3{margin:9px 0 6px;line-height:1.45}
+.earning-sidebar .earning-card p{line-height:1.6;color:#607368}
+.earning-sidebar .earning-card ul{line-height:1.8;padding-left:18px}
+@media(max-width:700px){
+  .page-layout{display:flex;flex-direction:column;gap:16px}
+  .page-content{width:100%;min-width:0}
+  .earning-sidebar{width:100%;position:static;order:2}
+  .earning-sidebar .earning-panel{padding:14px}
+  .earning-sidebar .earning-heading h2{font-size:18px}
+  .earning-sidebar .earning-heading p{font-size:13px;line-height:1.6}
+  .earning-sidebar .earning-grid{
+    display:flex;overflow-x:auto;gap:12px;padding:2px 2px 10px;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch
+  }
+  .earning-sidebar .earning-card{
+    flex:0 0 min(78vw,260px);min-width:0;padding:13px;scroll-snap-align:start
+  }
+  .earning-sidebar .earning-card h3{font-size:15px}
+  .earning-sidebar .earning-card p,
+  .earning-sidebar .earning-card li,
+  .earning-sidebar .earning-card strong{font-size:12px;line-height:1.55}
+  .earning-sidebar .earning-note{font-size:11px;line-height:1.55}
+}
