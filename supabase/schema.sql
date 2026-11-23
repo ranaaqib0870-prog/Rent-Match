@@ -27,6 +27,13 @@ create table if not exists public.listings (
   constraint listing_longitude_range check (longitude is null or longitude between -180 and 180)
 );
 
+-- Ensure these columns are added even when the listings table already existed.
+alter table public.listings
+  add column if not exists latitude double precision,
+  add column if not exists longitude double precision,
+  add column if not exists photo_urls text[] not null default '{}',
+  add column if not exists status text not null default 'active';
+
 create index if not exists listings_status_created_idx on public.listings(status, created_at desc);
 create index if not exists listings_area_idx on public.listings using gin (to_tsvector('simple', area));
 create index if not exists listings_owner_idx on public.listings(owner_id);
