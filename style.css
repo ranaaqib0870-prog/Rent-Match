@@ -69,3 +69,5 @@ body.media-viewer-open{overflow:hidden}
 
 .call-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:42px;padding:8px;min-width:44px}
 .call-icon-btn svg{display:block;width:23px;height:23px;fill:currentColor}
+
+.whatsapp-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:42px;padding:8px;min-width:44px;background:#e7f7ed;color:#16834a}.whatsapp-icon-btn svg{display:block;width:25px;height:25px;fill:currentColor}
