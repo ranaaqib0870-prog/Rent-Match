@@ -49,7 +49,7 @@ function shell() {
         <label class="wide"><span><input name="use_current_location" type="checkbox" style="display:inline;width:auto"> یہ پراپرٹی میری موجودہ لوکیشن پر ہے</span></label>
         <label class="wide">تفصیل<textarea name="description"></textarea></label>
         <button class="primary">اشتہار شائع کریں</button>
-      </form><p class="muted">اشتہار لگانے کے لیے پہلے Gmail سے لاگ اِن کریں۔ اشتہار جمع ہوتے ہی شائع ہوگا۔</p>
+      </form><p class="muted">اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔ اشتہار جمع ہوتے ہی شائع ہوگا۔</p>
     </div></section>
     <section id="wanted" class="tab hidden"><div class="panel"><h2>اپنی ضرورت درج کریں</h2>
       <form id="wantedForm" class="grid">
@@ -61,10 +61,13 @@ function shell() {
         <button class="primary">مطابق پراپرٹیز تلاش کریں</button>
       </form></div><div id="wantedResults" class="cards"></div></section>
     <section id="mine" class="tab hidden"><div class="panel"><h2>میرے اشتہارات</h2><p class="muted">یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔</p></div><div id="myListings" class="cards"></div></section>
-    <section id="account" class="tab hidden"><div class="panel"><h2>Gmail سے لاگ اِن</h2>
-      <form id="otpForm" class="grid"><label>Gmail ایڈریس<input name="email" type="email" required></label><button class="primary">Gmail پر OTP بھیجیں</button></form>
-      <form id="verifyForm" class="grid hidden"><label>ای میل میں موصول ہونے والا 6 ہندسوں کا کوڈ<input name="token" inputmode="numeric" required></label><button class="primary">تصدیق کریں</button></form>
-      <p id="accountStatus" class="muted">اپنا Gmail درج کریں۔</p><button id="logout" class="secondary hidden">لاگ آؤٹ</button>
+    <section id="account" class="tab hidden"><div class="panel"><h2>اکاؤنٹ میں لاگ اِن</h2>
+      <p>بغیر OTP کے اپنے اکاؤنٹ سے محفوظ طریقے سے لاگ اِن کریں۔</p>
+      <div class="grid">
+        <button id="googleLogin" class="primary" type="button">Google / Gmail سے لاگ اِن کریں</button>
+        <button id="facebookLogin" class="secondary" type="button">Facebook سے لاگ اِن کریں</button>
+      </div>
+      <p id="accountStatus" class="muted">لاگ اِن کرنے کے لیے ایک آپشن منتخب کریں۔</p><button id="logout" class="secondary hidden">لاگ آؤٹ</button>
     </div></section>
     <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminListings" class="cards"></div></div></section>
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
@@ -74,8 +77,8 @@ function shell() {
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
-  $('#otpForm').addEventListener('submit', sendOtp);
-  $('#verifyForm').addEventListener('submit', verifyOtp);
+  $('#googleLogin').addEventListener('click', () => loginWithProvider('google'));
+  $('#facebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#logout').addEventListener('click', logout);
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
 }
@@ -166,26 +169,17 @@ async function loadListings(form = null, useLocation = true, target = 'results')
   state.listings = data || [];
   render(state.listings, target);
 }
-async function sendOtp(e) {
-  e.preventDefault();
-  if (!supabase) return notice('Supabase URL اور anon key کی سیٹنگ درکار ہے۔');
-  const email = String(new FormData(e.target).get('email') || '').trim().toLowerCase();
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-  if (error) return notice(error.message);
-  $('#verifyForm').classList.remove('hidden');
-  $('#accountStatus').textContent = 'اگر Supabase میں Email OTP فعال ہے تو آپ کے Gmail پر کوڈ بھیج دیا گیا ہے۔';
-}
-async function verifyOtp(e) {
-  e.preventDefault();
+async function loginWithProvider(provider) {
   if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
-  const email = String(new FormData($('#otpForm')).get('email') || '').trim().toLowerCase();
-  const token = String(new FormData(e.target).get('token') || '').trim();
-  const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
-  if (error) return notice(error.message);
-  state.user = data.user;
-  await refreshUser();
-  $('#verifyForm').classList.add('hidden');
-  $('#accountStatus').textContent = 'لاگ اِن کامیاب: ' + (data.user.email || '');
+  if ($('#accountStatus')) $('#accountStatus').textContent = 'آپ کو محفوظ لاگ اِن صفحے پر بھیجا جا رہا ہے…';
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.origin }
+  });
+  if (error) {
+    if ($('#accountStatus')) $('#accountStatus').textContent = 'لاگ اِن شروع نہیں ہو سکا۔';
+    return notice(error.message);
+  }
 }
 async function refreshUser() {
   if (!supabase) return;
@@ -213,7 +207,7 @@ async function logout() {
 async function publish(e) {
   e.preventDefault();
   if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
-  if (!state.user) return notice('پہلے Gmail سے لاگ اِن کریں۔');
+  if (!state.user) return notice('پہلے Google یا Facebook سے لاگ اِن کریں۔');
   const f = new FormData(e.target), phone = String(f.get('owner_phone') || '').trim();
   if (!phone) return notice('موبائل نمبر درج کریں۔');
   const files = f.getAll('photos').filter(file => file instanceof File && file.size);
@@ -262,7 +256,7 @@ async function reportListing(id) {
 }
 async function loadMyListings() {
   if (!supabase || !state.user) {
-    $('#myListings').innerHTML = '<div class="empty">اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں Gmail سے لاگ اِن کریں۔</div>';
+    $('#myListings').innerHTML = '<div class="empty">اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں لاگ اِن کریں۔</div>';
     return;
   }
   await refreshUser();
