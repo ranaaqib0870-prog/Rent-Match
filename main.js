@@ -77,8 +77,15 @@ function shell() {
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
   <main class="wrap">
-    <section id="search" class="tab"><div class="panel">
-      <h2>گھر یا دکان تلاش کریں</h2><p id="locationStatus" class="muted">آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…</p>
+    <section id="search" class="tab">
+      <div class="search-intro">
+        <span class="eyebrow">RENT MATCH</span>
+        <h1>گھر یا دکان تلاش کریں</h1>
+        <p>اپنی ضرورت کے مطابق پراپرٹی تلاش کرنے کے لیے یہاں کلک کریں۔</p>
+        <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
+      </div>
+      <div id="propertySearchPanel" class="panel search-panel hidden">
+      <p id="locationStatus" class="muted">آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…</p>
       <form id="searchForm" class="grid">
         <label>شہر / علاقہ<input name="area" placeholder="مثلاً خوشاب، جوہرآباد"></label>
         <label>قسم<select name="type"><option value="">دونوں</option><option>گھر</option><option>دکان</option></select></label>
@@ -86,7 +93,11 @@ function shell() {
         <label>زیادہ سے زیادہ ایڈوانس<input name="advance" type="number" min="0"></label>
         <button class="primary">تلاش کریں</button>
         <button type="button" id="nearMe" class="secondary">میری موجودہ لوکیشن</button>
-      </form></div><div class="results-heading"><h2>دستیاب پراپرٹیز</h2><span>تفصیل دیکھنے کے لیے کارڈ کھولیں</span></div><div id="results" class="cards"></div></section>
+      </form>
+      <div class="results-heading"><h2>دستیاب پراپرٹیز</h2><span>تفصیل دیکھنے کے لیے کارڈ کھولیں</span></div>
+      <div id="results" class="cards"></div>
+      </div>
+    </section>
     <section id="post" class="tab hidden"><div class="panel"><h2>پراپرٹی کا اشتہار لگائیں</h2>
       <form id="postForm" class="grid">
         <label>قسم<select name="type"><option>گھر</option><option>دکان</option></select></label>
@@ -130,6 +141,11 @@ function shell() {
     applyLanguage(languageSelect.value);
   }
   document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  $('#openPropertySearch').addEventListener('click', () => {
+    $('#propertySearchPanel').classList.remove('hidden');
+    $('#openPropertySearch').classList.add('hidden');
+    $('#propertySearchPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
