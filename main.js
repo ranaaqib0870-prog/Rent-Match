@@ -66,7 +66,7 @@ function esc(value = '') {
 }
 function shell() {
   $('#app').innerHTML = `
-  <header><div class="wrap"><div class="brand">🏠 RENT MATCH</div>
+  <header><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div>
     <p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
     <nav>
       <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
@@ -124,9 +124,11 @@ function shell() {
   </main><footer>RENT MATCH ©</footer>`;
 
   const languageSelect = $('#languageSelect');
-  languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';
-  languageSelect.addEventListener('change', e => applyLanguage(e.target.value));
-  applyLanguage(languageSelect.value);
+  if (languageSelect) {
+    languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';
+    languageSelect.addEventListener('change', e => applyLanguage(e.target.value));
+    applyLanguage(languageSelect.value);
+  }
   document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
   $('#searchForm').addEventListener('submit', e => { e.preventDefault(); loadListings(new FormData(e.target), true); });
   $('#postForm').addEventListener('submit', publish);
