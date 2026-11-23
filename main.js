@@ -483,7 +483,15 @@ async function start() {
   await refreshUser();
   await detectLocation();
   await loadListings();
-  supabase.auth.onAuthStateChange(() => { refreshUser(); });
+  // Refresh the listing cards after login/logout so the comment box appears
+  // immediately when the user's authentication state changes.
+  supabase.auth.onAuthStateChange(() => {
+    setTimeout(async () => {
+      await refreshUser();
+      if (state.tab === 'search') await loadListings();
+      if (state.tab === 'mine') await loadMyListings();
+    }, 0);
+  });
 }
 start().catch(error => {
   console.error('RENT MATCH startup error:', error);
