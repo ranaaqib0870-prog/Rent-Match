@@ -194,7 +194,7 @@ function card(x) {
         ${x.description ? `<p>${esc(x.description)}</p>` : ''}
         ${photos.length > 1 ? `<div class="extra-photos">${photos.slice(1).map((u, i) => mediaButton(u, i + 1)).join('')}</div>` : ''}
         <div class="actions">
-          <a class="btn primary" href="tel:${esc(phone)}">کال کریں</a>
+          <a class="btn primary call-icon-btn" href="tel:${esc(phone)}" aria-label="کال کریں" title="کال کریں"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.32.56 3.58.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.6 21 3 13.4 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.19 2.46.56 3.58a1 1 0 0 1-.24 1.02z"/></svg></a>
           <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/${esc(whatsapp)}">WhatsApp</a>
           ${x.owner_id !== state.user?.id ? `<button class="danger" data-report="${esc(x.id)}">رپورٹ کریں</button>` : ''}
           ${state.admin ? `<button class="danger" data-remove="${esc(x.id)}">اشتہار ہٹائیں</button>` : ''}
