@@ -94,9 +94,9 @@ function shell() {
         <button class="primary">تلاش کریں</button>
         <button type="button" id="nearMe" class="secondary">میری موجودہ لوکیشن</button>
       </form>
+      </div>
       <div class="results-heading"><h2>دستیاب پراپرٹیز</h2><span>تفصیل دیکھنے کے لیے کارڈ کھولیں</span></div>
       <div id="results" class="cards"></div>
-      </div>
     </section>
     <section id="post" class="tab hidden"><div class="panel"><h2>پراپرٹی کا اشتہار لگائیں</h2>
       <form id="postForm" class="grid">
