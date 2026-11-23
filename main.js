@@ -14,53 +14,128 @@ const translations = {
   'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
   'پراپرٹی تلاش کریں':'Find Property','اشتہار لگائیں':'Post Listing','ضرورت درج کریں':'Post Requirement',
   'میرے اشتہارات':'My Listings','اطلاعات':'Notifications','اکاؤنٹ':'Account','ایڈمن':'Admin',
-  'گھر یا دکان تلاش کریں':'Find a house or shop','شہر / علاقہ':'City / Area',
-  'قسم':'Type','دونوں':'Both','گھر':'House','دکان':'Shop',
-  'زیادہ سے زیادہ کرایہ':'Maximum Rent','زیادہ سے زیادہ ایڈوانس':'Maximum Advance',
-  'تلاش کریں':'Search','میری موجودہ لوکیشن':'My Current Location',
-  'پراپرٹی کا اشتہار لگائیں':'Post a Property Listing','ماہانہ کرایہ':'Monthly Rent',
-  'ایڈوانس':'Advance','سائز / کمرے':'Size / Rooms','رابطہ موبائل نمبر':'Contact Mobile Number',
-  'تصاویر (زیادہ سے زیادہ 5)':'Photos (up to 5)','تفصیل':'Description',
-  'اشتہار شائع کریں':'Publish Listing','یہ پراپرٹی میری موجودہ لوکیشن پر ہے':'This property is at my current location',
-  'اپنی ضرورت درج کریں':'Post Your Requirement','اضافی شرائط':'Additional Requirements',
-  'مطابق پراپرٹیز تلاش کریں':'Find Matching Properties',
-  'یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔':'View and remove your own listings here.',
-  'اکاؤنٹ میں لاگ اِن':'Sign in to Your Account',
-  'بغیر OTP کے اپنے اکاؤنٹ سے محفوظ طریقے سے لاگ اِن کریں۔':'Sign in securely without an OTP.',
-  'Google / Gmail سے لاگ اِن کریں':'Continue with Google / Gmail',
-  'Facebook سے لاگ اِن کریں':'Continue with Facebook',
-  'لاگ اِن کرنے کے لیے ایک آپشن منتخب کریں۔':'Choose a sign-in option.',
-  'ایڈمن کنٹرول':'Admin Control','ایڈمن اکاؤنٹ سے لاگ اِن کریں۔':'Sign in with an admin account.',
+  'گھر یا دکان تلاش کریں':'Find a house or shop','شہر / علاقہ':'City / Area','قسم':'Type','دونوں':'Both','گھر':'House','دکان':'Shop',
+  'زیادہ سے زیادہ کرایہ':'Maximum Rent','زیادہ سے زیادہ ایڈوانس':'Maximum Advance','تلاش کریں':'Search','میری موجودہ لوکیشن':'My Current Location',
+  'پراپرٹی کا اشتہار لگائیں':'Post a Property Listing','ماہانہ کرایہ':'Monthly Rent','ایڈوانس':'Advance','سائز / کمرے':'Size / Rooms',
+  'رابطہ موبائل نمبر':'Contact Mobile Number','تصاویر (زیادہ سے زیادہ 5)':'Photos (up to 5)','تصاویر یا ویڈیوز (زیادہ سے زیادہ 5)':'Photos or Videos (up to 5)',
+  'تفصیل':'Description','اشتہار شائع کریں':'Publish Listing','یہ پراپرٹی میری موجودہ لوکیشن پر ہے':'This property is at my current location',
+  'اپنی ضرورت درج کریں':'Post Your Requirement','اضافی شرائط':'Additional Requirements','مطابق پراپرٹیز تلاش کریں':'Find Matching Properties',
+  'یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔':'View and manage your own listings here.',
+  'اکاؤنٹ میں لاگ اِن':'Sign in to Your Account','بغیر OTP کے اپنے اکاؤنٹ سے محفوظ طریقے سے لاگ اِن کریں۔':'Sign in securely without an OTP.',
+  'Google / Gmail سے لاگ اِن کریں':'Continue with Google / Gmail','Facebook سے لاگ اِن کریں':'Continue with Facebook',
+  'لاگ اِن کرنے کے لیے ایک آپشن منتخب کریں۔':'Choose a sign-in option.','ایڈمن کنٹرول':'Admin Control',
+  'ایڈمن اکاؤنٹ سے لاگ اِن کریں۔':'Sign in with an admin account.',
   'پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔':'Do not pay an advance before viewing the property and verifying the owner.',
-  'RENT MATCH ©':'RENT MATCH ©','کال کریں':'Call','رپورٹ کریں':'Report',
-  'اشتہار ہٹائیں':'Remove Listing','میرا اشتہار ختم کریں':'Remove My Listing',
-  'WhatsApp':'WhatsApp','اس وقت کوئی مناسب پراپرٹی نہیں ملی۔':'No matching properties found.',
-  'لاگ آؤٹ':'Log out'
+  'کال کریں':'Call','رپورٹ کریں':'Report','اشتہار ہٹائیں':'Remove Listing','میرا اشتہار ختم کریں':'Remove My Listing',
+  'اس وقت کوئی مناسب پراپرٹی نہیں ملی۔':'No matching properties found.','لاگ آؤٹ':'Log out',
+  'زبان / Language':'Language','اپنی ضرورت کے مطابق پراپرٹی تلاش کرنے کے لیے یہاں کلک کریں۔':'Click here to find a property that matches your needs.',
+  'اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں':'Promote Your Listing and Find a Tenant Faster',
+  'عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی.':'Basic property listings will always be free. Optional paid features will provide extra visibility.',
+  'نمایاں پراپرٹی اشتہار':'Featured Property Listing','اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔':'Your listing will appear above regular listings with a highlighted design.',
+  'پراپرٹی ڈیلر پیکج':'Property Agent Package','ڈیلرز اور ایجنٹس کے لیے ماہانہ پیکج، زیادہ اشتہارات اور کاروباری پروفائل۔':'A monthly package for dealers and agents, with more listings and a business profile.',
+  'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
+  'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
+  'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
+  'نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا.':'Note: These are introductory suggested prices. Payments and promoted listings will only activate after online payments are set up.',
+  'دستیاب پراپرٹیز':'Available Properties','تفصیل دیکھنے کے لیے کارڈ کھولیں':'Open a card to view details',
+  'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…':'Finding properties in your area…','5 مرلہ، 2 کمرے':'5 marla, 2 rooms',
+  'اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔ اشتہار جمع ہوتے ہی شائع ہوگا۔':'Sign in with Google or Facebook to post a listing. Your listing will be published as soon as you submit it.',
+  'آپ کے اشتہارات پر آنے والے نئے کمنٹس کی اطلاع یہاں ملے گی۔':'Notifications about new comments on your listings will appear here.',
+  'میڈیا کھولیں':'Open media','تصویر دستیاب نہیں':'No image available','مزید تفصیل کے لیے کلک کریں':'Click for more details',
+  'تفصیل دیکھیں ↓':'View Details ↓','تفصیل چھپائیں ↑':'Hide Details ↑','تبصرے / Comments':'Comments',
+  'کمنٹس لوڈ ہو رہے ہیں…':'Loading comments…','اپنا کمنٹ لکھیں…':'Write your comment…','کمنٹ بھیجیں':'Post Comment',
+  'کمنٹ کرنے کے لیے اکاؤنٹ میں لاگ اِن کریں۔':'Sign in to your account to comment.',
+  'لوکیشن کی اجازت نہیں ملی۔ آپ شہر یا علاقہ لکھ کر تلاش کر سکتے ہیں۔':'Location permission was not granted. You can search by entering a city or area.',
+  'Supabase سیٹنگ مکمل ہونے کے بعد پراپرٹیز لوڈ ہوں گی۔':'Properties will load once the Supabase setup is complete.',
+  'لوکیشن دستیاب نہیں؛ اوپر شہر یا علاقہ لکھ کر تلاش کریں۔':'Location unavailable. Enter a city or area above to search.',
+  'آپ کی لوکیشن دستیاب نہیں؛ کسی شہر یا علاقے کا نام لکھ کر تلاش کریں۔':'Your location is unavailable. Enter a city or area to search.',
+  'پراپرٹیز لوڈ نہیں ہوئیں: ':'Could not load properties: ','Supabase سیٹنگ مکمل نہیں۔':'Supabase setup is incomplete.',
+  'آپ کو محفوظ لاگ اِن صفحے پر بھیجا جا رہا ہے…':'Redirecting you to the secure sign-in page…',
+  'لاگ اِن شروع نہیں ہو سکا۔':'Could not start sign-in.','آپ لاگ اِن نہیں ہیں۔':'You are not signed in.',
+  'آپ لاگ آؤٹ ہیں۔':'You are logged out.','پہلے Google یا Facebook سے لاگ اِن کریں۔':'Please sign in with Google or Facebook first.',
+  'موبائل نمبر درج کریں۔':'Please enter a mobile number.','زیادہ سے زیادہ 5 تصاویر یا ویڈیوز اپ لوڈ کر سکتے ہیں。':'You can upload up to 5 photos or videos.',
+  'صرف تصویر یا ویڈیو فائل اپ لوڈ کریں۔':'Please upload image or video files only.','ہر ویڈیو 25MB سے کم ہونی چاہیے۔':'Each video must be smaller than 25 MB.',
+  'ہر تصویر 5MB سے کم ہونی چاہیے۔':'Each photo must be smaller than 5 MB.','تصویر اپ لوڈ نہیں ہوئی: ':'Could not upload image: ',
+  'اشتہار جمع نہیں ہوا: ':'Could not submit listing: ','آپ کا اشتہار فوراً شائع ہو گیا ہے۔':'Your listing has been published successfully.',
+  'رپورٹ کرنے کے لیے پہلے لاگ اِن کریں۔':'Please sign in to report this listing.','رپورٹ کی وجہ لکھیں:':'Please enter a reason for reporting:',
+  'رپورٹ جمع نہیں ہوئی: ':'Could not submit report: ','آپ کی رپورٹ موصول ہو گئی ہے۔':'Your report has been received.',
+  'پراپرٹی کی تصویر':'Property image','پراپرٹی کی بڑی تصویر':'Full-size property image','میڈیا کھولیں':'Open media',
+  'کمنٹس لوڈ نہیں ہو سکے۔':'Could not load comments.','ابھی کوئی کمنٹ نہیں۔ پہلا کمنٹ کریں۔':'No comments yet. Be the first to comment.',
+  'کمنٹ کرنے کے لیے پہلے لاگ اِن کریں۔':'Please sign in before commenting.','صارف':'User',
+  'کمنٹ بھیجا نہیں جا سکا: ':'Could not post comment: ','اطلاعات دیکھنے کے لیے لاگ اِن کریں۔':'Please sign in to view notifications.',
+  'اطلاعات لوڈ نہیں ہو سکیں۔':'Could not load notifications.','ابھی کوئی نئی اطلاع نہیں۔':'No new notifications yet.',
+  'آپ کے پراپرٹی اشتہار پر نیا کمنٹ آیا ہے۔':'A new comment has been posted on your property listing.',
+  'اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں لاگ اِن کریں۔':'Please sign in to view your listings.',
+  'آپ کے اشتہارات لوڈ نہیں ہوئے: ':'Could not load your listings: ','پہلے لاگ اِن کریں۔':'Please sign in first.',
+  'کیا آپ یہ اشتہار ختم کرنا چاہتے ہیں؟ یہ عام تلاش میں نظر نہیں آئے گا۔':'Do you want to remove this listing? It will no longer appear in public search.',
+  'اشتہار ختم نہیں ہوا: ':'Could not remove listing: ','آپ کا اشتہار ختم کر دیا گیا ہے۔':'Your listing has been removed.',
+  'ایڈمن دیکھنے کے لیے لاگ اِن کریں۔':'Please sign in to access Admin.','یہ حصہ صرف ایڈمن کے لیے ہے۔':'This section is for administrators only.',
+  'ایڈمن موڈ فعال ہے۔':'Admin mode is active.','صرف ایڈمن اشتہار ہٹا سکتا ہے۔':'Only an administrator can remove a listing.',
+  'کیا آپ واقعی یہ اشتہار ہٹانا چاہتے ہیں؟':'Are you sure you want to remove this listing?',
+  'اشتہار ہٹا دیا گیا۔':'The listing has been removed.','ایپ چل رہی ہے، لیکن Supabase کی سیٹنگ ابھی درکار ہے۔':'The app is running, but Supabase setup is still required.',
+  'Supabase سیٹنگ مکمل ہونے کے بعد تلاش شروع ہوگی۔':'Search will begin once the Supabase setup is complete.',
+  'ایپ شروع نہیں ہو سکی۔ براہِ کرم دوبارہ کوشش کریں۔':'The app could not start. Please try again.',
+  'تصاویر یا ویڈیوز':'Photos or Videos','میڈیا':'Media','ویڈیو':'Video','دن':'days','ماہ':'month'
 };
-function applyLanguage(lang) {
-  const english = lang === 'en';
-  document.documentElement.lang = english ? 'en' : 'ur';
-  document.documentElement.dir = english ? 'ltr' : 'rtl';
-  const walker = document.createTreeWalker(document.querySelector('#app'), NodeFilter.SHOW_TEXT);
+let currentLanguage = 'ur';
+const reverseTranslations = Object.fromEntries(Object.entries(translations).map(([ur, en]) => [en, ur]));
+function translateValue(value, lang = currentLanguage) {
+  if (lang === 'en') return translations[value] || value;
+  return reverseTranslations[value] || value;
+}
+function translateApp(root = document.querySelector('#app')) {
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let node;
   while ((node = walker.nextNode())) {
-    const original = node.nodeValue.trim();
-    if (!original) continue;
-    if (english && translations[original]) node.nodeValue = node.nodeValue.replace(original, translations[original]);
-    else if (!english) {
-      const reverse = Object.entries(translations).find(([, value]) => value === original);
-      if (reverse) node.nodeValue = node.nodeValue.replace(original, reverse[0]);
-    }
+    const trimmed = node.nodeValue.trim();
+    if (!trimmed) continue;
+    const translated = translateValue(trimmed);
+    if (translated !== trimmed) node.nodeValue = node.nodeValue.replace(trimmed, translated);
   }
-  document.querySelectorAll('#app input[placeholder], #app textarea[placeholder]').forEach(el => {
-    if (english && el.placeholder === 'مثلاً خوشاب، جوہرآباد') el.placeholder = 'e.g. Khushab, Jauharabad';
-    else if (!english && el.placeholder === 'e.g. Khushab, Jauharabad') el.placeholder = 'مثلاً خوشاب، جوہرآباد';
+  root.querySelectorAll('[placeholder], [aria-label], [title], [alt]').forEach(el => {
+    for (const attr of ['placeholder', 'aria-label', 'title', 'alt']) {
+      const value = el.getAttribute(attr);
+      if (value) el.setAttribute(attr, translateValue(value));
+    }
   });
-  localStorage.setItem('rent-match-language', lang);
+}
+function applyLanguage(lang) {
+  currentLanguage = lang === 'en' ? 'en' : 'ur';
+  document.documentElement.lang = currentLanguage;
+  document.documentElement.dir = currentLanguage === 'en' ? 'ltr' : 'rtl';
+  translateApp();
+  localStorage.setItem('rent-match-language', currentLanguage);
+}
+let languageObserver;
+function watchDynamicTranslations() {
+  const root = document.querySelector('#app');
+  if (!root || languageObserver) return;
+  languageObserver = new MutationObserver(records => {
+    for (const record of records) {
+      if (record.type === 'characterData') {
+        const translated = translateValue(record.target.nodeValue.trim());
+        if (translated !== record.target.nodeValue.trim() && record.target.nodeValue.trim()) {
+          const original = record.target.nodeValue.trim();
+          record.target.nodeValue = record.target.nodeValue.replace(original, translated);
+        }
+      }
+      record.addedNodes?.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const original = node.nodeValue.trim();
+          const translated = translateValue(original);
+          if (original && translated !== original) node.nodeValue = node.nodeValue.replace(original, translated);
+        } else if (node.nodeType === Node.ELEMENT_NODE) translateApp(node);
+      });
+      if (record.type === 'attributes') translateApp(record.target.parentElement || root);
+    }
+  });
+  languageObserver.observe(root, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:['placeholder','aria-label','title','alt']});
 }
 
 
-function notice(message) { alert(message); }
+
+function notice(message) { alert(translateValue(message)); }
 function esc(value = '') {
   return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -155,6 +230,7 @@ function shell() {
     languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';
     languageSelect.addEventListener('change', e => applyLanguage(e.target.value));
     applyLanguage(languageSelect.value);
+    watchDynamicTranslations();
   }
   document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
   $('#mediaViewer').addEventListener('click', e => { if (e.target.id === 'mediaViewer' || e.target.closest('.media-viewer-close')) closeMedia(); });
