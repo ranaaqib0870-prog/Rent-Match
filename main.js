@@ -8,7 +8,7 @@ const supabase = url && anon ? createClient(url, anon, {
 }) : null;
 
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null, agentProfiles: {}, listingsCacheKey: '', listingsLoadedAt: 0 };
+const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null, agentProfiles: {}, listingsCacheKey: '', listingsLoadedAt: 0, listingFilters: null, listingsHasMore: false, listingsLoadingMore: false };
 
 const translations = {
   'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
@@ -469,44 +469,59 @@ async function detectLocation(showMessage = false) {
   }
   return pos;
 }
-async function loadListings(form = null, useLocation = true, target = 'results') {
+async function loadListings(form = null, useLocation = true, target = 'results', append = false) {
   if (!supabase) { if ($('#locationStatus')) $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد پراپرٹیز لوڈ ہوں گی۔'; return; }
-  const cacheKey = form ? '' : (useLocation && state.location
+  if (append && state.listingsLoadingMore) return;
+  if (append) state.listingsLoadingMore = true;
+  const filters = form
+    ? { area: String(form.get('area') || '').trim(), type: form.get('type') || '', rent: form.get('rent') || '', advance: form.get('advance') || '', useLocation, target }
+    : (append ? state.listingFilters : { area: '', type: '', rent: '', advance: '', useLocation, target });
+  if (!append) {
+    state.listingFilters = filters;
+    state.listings = [];
+    state.listingsHasMore = false;
+  }
+  const cacheKey = !form && !append ? (useLocation && state.location
     ? 'near:' + state.location.latitude.toFixed(3) + ':' + state.location.longitude.toFixed(3)
-    : 'all');
-  if (!form && cacheKey && cacheKey === state.listingsCacheKey && Date.now() - state.listingsLoadedAt < 30000 && state.listings.length) {
+    : 'all') : '';
+  if (!append && !form && cacheKey && cacheKey === state.listingsCacheKey && Date.now() - state.listingsLoadedAt < 30000 && state.listings.length) {
     await render(state.listings, target);
+    addLoadMoreButton(target);
     return;
   }
-  // Fetch only fields used by the property cards; smaller responses arrive and render faster.
   let q = supabase.from('listings')
     .select('id,owner_id,owner_phone,type,area,rent,advance,size,description,photo_urls,created_at,latitude,longitude')
-    .eq('status', 'active').order('created_at', { ascending: false }).limit(50);
-  if (form) {
-    const area = String(form.get('area') || '').trim();
-    const type = form.get('type'), rent = form.get('rent'), advance = form.get('advance');
-    if (area) q = q.ilike('area', `%${area}%`);
-    if (type) q = q.eq('type', type);
-    if (rent) q = q.lte('rent', Number(rent));
-    if (advance) q = q.lte('advance', Number(advance));
-    if (area) {
-      useLocation = false;
-      if ($('#locationStatus')) $('#locationStatus').textContent = `آپ کے منتخب کردہ علاقے: ${area} کی پراپرٹیز دکھائی جا رہی ہیں۔`;
-    }
+    .eq('status', 'active').order('created_at', { ascending: false });
+  if (filters.area) q = q.ilike('area', `%${filters.area}%`);
+  if (filters.type) q = q.eq('type', filters.type);
+  if (filters.rent) q = q.lte('rent', Number(filters.rent));
+  if (filters.advance) q = q.lte('advance', Number(filters.advance));
+  if (filters.area && !append) {
+    filters.useLocation = false;
+    if ($('#locationStatus')) $('#locationStatus').textContent = `آپ کے منتخب کردہ علاقے: ${filters.area} کی پراپرٹیز دکھائی جا رہی ہیں۔`;
   }
-  if (useLocation && !state.location) {
-    if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کی لوکیشن دستیاب نہیں؛ کسی شہر یا علاقے کا نام لکھ کر تلاش کریں۔';    render([], target);
+  if (filters.useLocation && !state.location) {
+    if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کی لوکیشن دستیاب نہیں؛ کسی شہر یا علاقے کا نام لکھ کر تلاش کریں۔';
+    await render([], target);
+    state.listingsLoadingMore = false;
     return;
   }
-  if (useLocation && state.location) {
+  if (filters.useLocation && state.location) {
     const lat = state.location.latitude, lng = state.location.longitude;
     const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
     q = q.gte('latitude', lat - latDelta).lte('latitude', lat + latDelta)
       .gte('longitude', lng - lngDelta).lte('longitude', lng + lngDelta);
   }
-  const { data, error } = await q;
-  if (error) { notice('پراپرٹیز لوڈ نہیں ہوئیں: ' + error.message); return; }
-  state.listings = data || [];
+  const offset = append ? state.listings.length : 0;
+  const { data, error } = await q.range(offset, offset + 9);
+  if (error) {
+    state.listingsLoadingMore = false;
+    notice('پراپرٹیز لوڈ نہیں ہوئیں: ' + error.message);
+    return;
+  }
+  const page = data || [];
+  state.listingsHasMore = page.length === 10;
+  state.listings = append ? [...state.listings, ...page] : page;
   if (cacheKey) {
     state.listingsCacheKey = cacheKey;
     state.listingsLoadedAt = Date.now();
@@ -515,6 +530,25 @@ async function loadListings(form = null, useLocation = true, target = 'results')
     state.listingsLoadedAt = 0;
   }
   await render(state.listings, target);
+  addLoadMoreButton(target);
+  state.listingsLoadingMore = false;
+}
+function addLoadMoreButton(target = 'results') {
+  const el = $('#' + target);
+  if (!el) return;
+  el.querySelector('[data-load-more]')?.remove();
+  if (!state.listingsHasMore || target !== 'results') return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.loadMore = 'true';
+  button.className = 'primary load-more-button';
+  button.textContent = 'مزید اشتہارات دیکھیں';
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    button.textContent = 'لوڈ ہو رہا ہے…';
+    await loadListings(null, state.listingFilters?.useLocation ?? true, target, true);
+  });
+  el.appendChild(button);
 }
 async function loginWithProvider(provider) {
   if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
