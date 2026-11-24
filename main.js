@@ -83,9 +83,9 @@ const translations = {
   'آپ کا پریمیم اسٹیٹس':'Your Premium status','پریمیم فعال ہے تا':'Premium active until',
   'ابھی پریمیم فعال نہیں':'Premium is not active yet','ادائیگی کا طریقہ':'Payment method',
   'اکاؤنٹ ٹائٹل':'Account title','اکاؤنٹ نمبر':'Account number',
-  'رقم بھیجنے کے بعد ٹرانزیکشن آئی ڈی درج کریں۔':'After sending the payment, enter the transaction ID.',
+  'رقم بھیجنے کے بعد ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'After sending the payment, enter the transaction ID.',
   'پیکج':'Package','7 دن — Rs 300':'7 days — Rs 300','15 دن — Rs 500':'15 days — Rs 500',
-  '30 دن — Rs 900':'30 days — Rs 900','ٹرانزیکشن آئی ڈی':'Transaction ID',
+  '30 دن — Rs 900':'30 days — Rs 900','ادائیگی کا اسکرین شاٹ':'Payment screenshot','JPG, PNG یا WEBP — زیادہ سے زیادہ 5MB':'JPG, PNG or WEBP — max 5MB',
   'ادائیگی کرنے والے کا نام':'Sender name','ادائیگی کی درخواست جمع کریں':'Submit payment for verification',
   'درخواست کی ہسٹری':'Payment request history','ابھی کوئی ادائیگی درخواست نہیں۔':'No payment requests yet.',
   'زیرِ تصدیق':'Pending verification','منظور':'Approved','مسترد':'Rejected',
@@ -95,7 +95,7 @@ const translations = {
   'منظور کریں':'Approve','مسترد کریں':'Reject','ادائیگی کی درخواست منظور ہو گئی۔':'Payment request approved.',
   'ادائیگی کی درخواست مسترد ہو گئی۔':'Payment request rejected.','ادائیگی کی تصدیق نہیں ہو سکی: ':'Could not review payment: ',
   'پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ':'Could not load Premium status: ','صرف ایڈمن ادائیگی منظور کر سکتا ہے۔':'Only an administrator can approve payments.',
-  'ٹرانزیکشن آئی ڈی درج کریں۔':'Enter the transaction ID.','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 7-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
+  'ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'Upload the payment screenshot.','اسکرین شاٹ دیکھیں':'View screenshot','اسکرین شاٹ دستیاب نہیں':'Screenshot unavailable','ادائیگی کا اسکرین شاٹ':'Payment screenshot','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 7-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
   'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.'
 
 };
@@ -262,7 +262,7 @@ function shell() {
             <option value="easypaisa">EasyPaisa</option>
             <option value="jazzcash">JazzCash</option>
           </select></label>
-          <label>ٹرانزیکشن آئی ڈی<input name="transaction_id" required minlength="4" maxlength="100" autocomplete="off"></label>
+          <label>ادائیگی کا اسکرین شاٹ (JPG, PNG یا WEBP — زیادہ سے زیادہ 5MB)<input name="payment_screenshot" type="file" accept="image/jpeg,image/png,image/webp" required></label>
           <label>ادائیگی کرنے والے کا نام<input name="payer_name" maxlength="100"></label>
           <button class="primary" type="submit">ادائیگی کی درخواست جمع کریں</button>
         </form>
@@ -624,7 +624,7 @@ async function loadPremium() {
   }
   const [{ data: until, error: statusError }, { data: requests, error: historyError }] = await Promise.all([
     supabase.rpc('get_my_premium_status'),
-    supabase.from('premium_payment_requests').select('id,plan_code,amount,payment_method,transaction_id,status,created_at,admin_note')
+    supabase.from('premium_payment_requests').select('id,plan_code,amount,payment_method,screenshot_path,status,created_at,admin_note')
       .eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(10)
   ]);
   if (statusError) return notice('پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ' + statusError.message);
@@ -633,13 +633,20 @@ async function loadPremium() {
     : 'ابھی پریمیم فعال نہیں۔';
   if (historyError) return notice(historyError.message);
   const statusLabel = { pending:'زیرِ تصدیق', approved:'منظور', rejected:'مسترد' };
-  $('#premiumHistory').innerHTML = requests?.length ? requests.map(r => `
-    <div class="payment-history-row">
-      <strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')}</strong>
-      <span>${esc(statusLabel[r.status] || r.status)}</span>
-      <small>TXN: ${esc(r.transaction_id)} · ${new Date(r.created_at).toLocaleString()}</small>
-      ${r.admin_note ? `<small>${esc(r.admin_note)}</small>` : ''}
-    </div>`).join('') : '<div class="empty">ابھی کوئی ادائیگی درخواست نہیں۔</div>';
+  const historyRows = await Promise.all((requests || []).map(async r => {
+    const { data: proof } = r.screenshot_path
+      ? await supabase.storage.from('premium-payment-screenshots').createSignedUrl(r.screenshot_path, 600)
+      : { data: null };
+    return `
+      <div class="payment-history-row">
+        <strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')}</strong>
+        <span>${esc(statusLabel[r.status] || r.status)}</span>
+        <small>${new Date(r.created_at).toLocaleString()}</small>
+        ${proof?.signedUrl ? `<a class="payment-proof-link" href="${esc(proof.signedUrl)}" target="_blank" rel="noopener">اسکرین شاٹ دیکھیں</a>` : '<small>اسکرین شاٹ دستیاب نہیں</small>'}
+        ${r.admin_note ? `<small>${esc(r.admin_note)}</small>` : ''}
+      </div>`;
+  }));
+  $('#premiumHistory').innerHTML = historyRows.length ? historyRows.join('') : '<div class="empty">ابھی کوئی ادائیگی درخواست نہیں۔</div>';
 }
 async function submitPremiumPayment(e) {
   e.preventDefault();
@@ -647,15 +654,32 @@ async function submitPremiumPayment(e) {
   const f = new FormData(e.target);
   const plan = String(f.get('plan_code') || '');
   const amounts = { premium_7_days:300, premium_15_days:500, premium_30_days:900 };
-  const transactionId = String(f.get('transaction_id') || '').trim();
+  const screenshot = f.get('payment_screenshot');
   if (!amounts[plan]) return;
-  if (transactionId.length < 4) return notice('ٹرانزیکشن آئی ڈی درج کریں۔');
+  if (!(screenshot instanceof File) || !screenshot.size) return notice('ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔');
+  const allowedTypes = ['image/jpeg','image/png','image/webp'];
+  if (!allowedTypes.includes(screenshot.type)) return notice('صرف JPG, PNG یا WEBP اسکرین شاٹ اپلوڈ کریں۔');
+  if (screenshot.size > 5 * 1024 * 1024) return notice('اسکرین شاٹ 5MB سے کم ہونا چاہیے۔');
+  const ext = screenshot.type === 'image/jpeg' ? 'jpg' : screenshot.type === 'image/png' ? 'png' : 'webp';
+  const screenshotPath = `${state.user.id}/${crypto.randomUUID()}.${ext}`;
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'اپلوڈ ہو رہا ہے…'; }
+  const { error: uploadError } = await supabase.storage.from('premium-payment-screenshots')
+    .upload(screenshotPath, screenshot, { contentType: screenshot.type, cacheControl: '3600', upsert: false });
+  if (uploadError) {
+    if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'ادائیگی کی درخواست جمع کریں'; }
+    return notice('اسکرین شاٹ اپلوڈ نہیں ہوا: ' + uploadError.message);
+  }
   const { error } = await supabase.from('premium_payment_requests').insert({
     user_id: state.user.id, plan_code: plan, amount: amounts[plan],
-    payment_method: f.get('payment_method'), transaction_id: transactionId,
-    payer_name: String(f.get('payer_name') || '').trim()
+    payment_method: f.get('payment_method'), transaction_id: null,
+    payer_name: String(f.get('payer_name') || '').trim(), screenshot_path: screenshotPath
   });
-  if (error) return notice('ادائیگی جمع نہیں ہوئی: ' + error.message);
+  if (error) {
+    await supabase.storage.from('premium-payment-screenshots').remove([screenshotPath]);
+    if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'ادائیگی کی درخواست جمع کریں'; }
+    return notice('ادائیگی جمع نہیں ہوئی: ' + error.message);
+  }
   notice('آپ کی ادائیگی کی درخواست موصول ہو گئی ہے۔ تصدیق کے بعد Premium فعال ہو جائے گا۔');
   e.target.reset();
   await loadPremium();
@@ -668,14 +692,21 @@ async function loadPaymentRequests() {
     .order('created_at', { ascending: false }).limit(100);
   if (error) { el.textContent = error.message; return; }
   const pending = (data || []).filter(r => r.status === 'pending');
-  el.innerHTML = '<h3>ایڈمن ادائیگیوں کی تصدیق</h3>' + (pending.length ? pending.map(r => `
-    <article class="payment-admin-row">
-      <div><strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.plan_code.replace('premium_','').replaceAll('_',' '))}</strong>
-      <p>${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')} · TXN: <bdi>${esc(r.transaction_id)}</bdi></p>
-      <small>Sender: ${esc(r.payer_name || '—')} · User: ${esc(r.user_id)} · ${new Date(r.created_at).toLocaleString()}</small></div>
-      <div class="actions"><button class="primary" type="button" data-review-payment="${esc(r.id)}" data-approve="true">منظور کریں</button>
-      <button class="danger" type="button" data-review-payment="${esc(r.id)}" data-approve="false">مسترد کریں</button></div>
-    </article>`).join('') : '<div class="empty">کوئی زیرِ تصدیق ادائیگی نہیں۔</div>');
+  const paymentCards = await Promise.all(pending.map(async r => {
+    const { data: proof } = r.screenshot_path
+      ? await supabase.storage.from('premium-payment-screenshots').createSignedUrl(r.screenshot_path, 900)
+      : { data: null };
+    return `
+      <article class="payment-admin-row">
+        <div><strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.plan_code.replace('premium_','').replaceAll('_',' '))}</strong>
+        <p>${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')}</p>
+        <small>Sender: ${esc(r.payer_name || '—')} · User: ${esc(r.user_id)} · ${new Date(r.created_at).toLocaleString()}</small>
+        ${proof?.signedUrl ? `<a class="payment-proof-link" href="${esc(proof.signedUrl)}" target="_blank" rel="noopener"><img class="payment-proof-thumb" src="${esc(proof.signedUrl)}" alt="Payment screenshot">اسکرین شاٹ دیکھیں</a>` : '<small>اسکرین شاٹ دستیاب نہیں</small>'}</div>
+        <div class="actions"><button class="primary" type="button" data-review-payment="${esc(r.id)}" data-approve="true">منظور کریں</button>
+        <button class="danger" type="button" data-review-payment="${esc(r.id)}" data-approve="false">مسترد کریں</button></div>
+      </article>`;
+  }));
+  el.innerHTML = '<h3>ایڈمن ادائیگیوں کی تصدیق</h3>' + (paymentCards.length ? paymentCards.join('') : '<div class="empty">کوئی زیرِ تصدیق ادائیگی نہیں۔</div>');
   el.querySelectorAll('[data-review-payment]').forEach(btn => btn.addEventListener('click', async () => {
     if (!state.admin) return notice('صرف ایڈمن ادائیگی منظور کر سکتا ہے۔');
     const approve = btn.dataset.approve === 'true';
