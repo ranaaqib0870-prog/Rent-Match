@@ -222,3 +222,17 @@ body.media-viewer-open{overflow:hidden}
 
 /* Keep the owner's listing removal action prominent and visible */
 .owner-delete-btn{display:block!important;width:100%;margin-top:9px;padding:12px 14px;background:#fff0ef!important;color:#a52d25!important;border:1px solid #efc5c1!important;font-weight:850!important;}
+
+/* Premium payment flow and secure admin review */
+.premium-panel{max-width:850px;margin:0 auto}
+.payment-account{background:#edf8f1;border:1px solid #cfe6d7;border-radius:13px;padding:14px;margin:14px 0}
+.payment-account h3,.payment-history-title{margin:0 0 9px}
+.payment-account p{margin:6px 0}
+.premium-form{margin:14px 0 20px}
+.payment-history-row,.payment-admin-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;background:#fff;border:1px solid #dce7df;border-radius:12px;padding:12px;margin:8px 0}
+.payment-history-row small,.payment-admin-row small{display:block;width:100%;color:#687b71;overflow-wrap:anywhere}
+.payment-admin-row p{margin:5px 0}
+.admin-payments{margin:16px 0 22px}
+.admin-payments h3{margin:12px 0}
+.payment-admin-row .actions{margin:0}
+@media(max-width:560px){.payment-admin-row{align-items:flex-start}.payment-admin-row .actions{width:100%}.payment-admin-row .actions button{flex:1}}
