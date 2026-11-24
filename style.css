@@ -335,3 +335,12 @@ footer{padding:28px 16px;color:#718278}
 @media(max-width:480px){.auth-gate{padding:18px 14px}.auth-card{border-radius:19px}.auth-card h1{font-size:22px}}
 
 .load-more-button{display:block;width:min(100%,320px);margin:18px auto;padding:13px 18px;box-shadow:0 5px 16px rgba(18,107,75,.14)}.load-more-button:disabled{opacity:.65;cursor:wait}
+
+
+/* Facebook-style notification bell in the top app bar */
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header-actions{display:flex;align-items:center;gap:12px}
+.notification-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #dce9df;border-radius:50%;background:#fff;color:#173f2d;font-size:21px;cursor:pointer;box-shadow:0 3px 12px rgba(18,55,37,.08)}
+.notification-bell:active{transform:scale(.96)}
+.notification-bell .notification-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#e53935;color:#fff;border:2px solid #fff;font:700 10px/15px system-ui;text-align:center}
+@media(max-width:560px){.notification-bell{width:40px;height:40px}.header-actions{gap:8px}}
