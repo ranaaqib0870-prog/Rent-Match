@@ -105,7 +105,7 @@ const translations = {
   'ایجنٹ بزنس پروفائل':'Agent Business Profile','ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔':'Complete your business profile after your Agent package is activated.',
   'کاروبار / ایجنسی کا نام':'Business / Agency Name','رابطہ موبائل نمبر':'Contact Mobile Number','مختصر تعارف':'Short Description','پروفائل محفوظ کریں':'Save Profile',
   'کاروبار کا نام اور رابطہ نمبر لازمی درج کریں۔':'Business name and contact number are required.','آپ کا ایجنٹ پروفائل محفوظ ہو گیا ہے۔':'Your Agent profile has been saved.',
-  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent'
+  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent','پرائیویسی پالیسی':'Privacy Policy','استعمال کی شرائط':'Terms of Use'
 
 };
 let currentLanguage = 'ur';
@@ -305,7 +305,7 @@ function shell() {
       </div>
 
     </div>
-  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><div id="appToast" class="app-toast" role="status" aria-live="polite"></div><footer>RENT MATCH ©</footer>`;
+  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><div id="appToast" class="app-toast" role="status" aria-live="polite"></div><footer>RENT MATCH © · <a href="/privacy.html">پرائیویسی پالیسی</a> · <a href="/terms.html">استعمال کی شرائط</a></footer>`;
 
   const languageSelect = $('#languageSelect');
   if (languageSelect) {
