@@ -236,3 +236,9 @@ body.media-viewer-open{overflow:hidden}
 .admin-payments h3{margin:12px 0}
 .payment-admin-row .actions{margin:0}
 @media(max-width:560px){.payment-admin-row{align-items:flex-start}.payment-admin-row .actions{width:100%}.payment-admin-row .actions button{flex:1}}
+
+.payment-proof-link{display:inline-flex;align-items:center;gap:9px;color:#167346;font-weight:700;text-decoration:underline;margin-top:8px}
+.payment-proof-thumb{width:76px;height:76px;object-fit:cover;border-radius:9px;border:1px solid #cbd9d0}
+.payment-admin-row .payment-proof-link{display:flex;width:max-content;max-width:100%}
+.premium-form input[type=file]{max-width:100%;padding:10px;background:#fff;border:1px dashed #9db8a7;border-radius:10px}
+.payment-history-row .payment-proof-link{font-size:13px}
