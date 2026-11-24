@@ -8,7 +8,7 @@ const supabase = url && anon ? createClient(url, anon, {
 }) : null;
 
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null, agentProfiles: {} };
+const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null, agentProfiles: {}, listingsCacheKey: '', listingsLoadedAt: 0 };
 
 const translations = {
   'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
@@ -453,7 +453,7 @@ function getPosition() {
     if (!navigator.geolocation) return resolve(null);
     navigator.geolocation.getCurrentPosition(
       p => resolve({ latitude: p.coords.latitude, longitude: p.coords.longitude }),
-      () => resolve(null), { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
+      () => resolve(null), { enableHighAccuracy: false, timeout: 3000, maximumAge: 900000 }
     );
   });
 }
@@ -471,7 +471,17 @@ async function detectLocation(showMessage = false) {
 }
 async function loadListings(form = null, useLocation = true, target = 'results') {
   if (!supabase) { if ($('#locationStatus')) $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد پراپرٹیز لوڈ ہوں گی۔'; return; }
-  let q = supabase.from('listings').select('*').eq('status', 'active').order('created_at', { ascending: false }).limit(100);
+  const cacheKey = form ? '' : (useLocation && state.location
+    ? 'near:' + state.location.latitude.toFixed(3) + ':' + state.location.longitude.toFixed(3)
+    : 'all');
+  if (!form && cacheKey && cacheKey === state.listingsCacheKey && Date.now() - state.listingsLoadedAt < 30000 && state.listings.length) {
+    await render(state.listings, target);
+    return;
+  }
+  // Fetch only fields used by the property cards; smaller responses arrive and render faster.
+  let q = supabase.from('listings')
+    .select('id,owner_id,owner_phone,type,area,rent,advance,size,description,photo_urls,created_at,latitude,longitude')
+    .eq('status', 'active').order('created_at', { ascending: false }).limit(50);
   if (form) {
     const area = String(form.get('area') || '').trim();
     const type = form.get('type'), rent = form.get('rent'), advance = form.get('advance');
@@ -497,6 +507,13 @@ async function loadListings(form = null, useLocation = true, target = 'results')
   const { data, error } = await q;
   if (error) { notice('پراپرٹیز لوڈ نہیں ہوئیں: ' + error.message); return; }
   state.listings = data || [];
+  if (cacheKey) {
+    state.listingsCacheKey = cacheKey;
+    state.listingsLoadedAt = Date.now();
+  } else if (form) {
+    state.listingsCacheKey = '';
+    state.listingsLoadedAt = 0;
+  }
   await render(state.listings, target);
 }
 async function loginWithProvider(provider) {
@@ -770,10 +787,13 @@ async function loadAdminReports() {
 
 async function loadActiveAgentProfiles(items) {
   const ids = [...new Set((items || []).map(x => x.owner_id).filter(Boolean))];
-  if (!ids.length || !supabase) { state.agentProfiles = {}; return; }
-  const { data, error } = await supabase.rpc('get_active_agent_profiles', { p_user_ids: ids });
-  if (error) { console.warn('Could not load verified agent profiles:', error.message); state.agentProfiles = {}; return; }
-  state.agentProfiles = Object.fromEntries((data || []).map(p => [p.user_id, p]));
+  if (!ids.length || !supabase) return;
+  // Reuse profiles already fetched during this session instead of calling the database again.
+  const missingIds = ids.filter(id => !state.agentProfiles[id]);
+  if (!missingIds.length) return;
+  const { data, error } = await supabase.rpc('get_active_agent_profiles', { p_user_ids: missingIds });
+  if (error) { console.warn('Could not load verified agent profiles:', error.message); return; }
+  Object.assign(state.agentProfiles, Object.fromEntries((data || []).map(p => [p.user_id, p])));
 }
 
 async function loadAgentProfile() {
@@ -931,18 +951,20 @@ async function removeListing(id) {
 }
 async function start() {
   shell();
+  // Show the login/app shell immediately; never wait for network requests before painting the screen.
+  setAppAccess();
   if (!supabase) {
     $('#accountStatus').textContent = 'ایپ چل رہی ہے، لیکن Supabase کی سیٹنگ ابھی درکار ہے۔';
     $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد تلاش شروع ہوگی۔';
     return;
   }
+  if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…';
+  // Resolve account and device location in parallel to avoid serial startup delays.
+  const locationTask = detectLocation().catch(error => { console.warn('Location lookup failed:', error); return null; });
   await refreshUser();
   setAppAccess();
-  if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…';
-  // Do not block the whole app while the browser asks for location permission.
-  detectLocation().then(() => {
-    if (state.tab === 'search') loadListings();
-  }).catch(error => console.warn('Location lookup failed:', error));
+  await locationTask;
+  if (state.tab === 'search') await loadListings();
   // Refresh the listing cards after login/logout so the comment box appears
   // immediately when the user's authentication state changes.
   supabase.auth.onAuthStateChange(() => {
