@@ -326,7 +326,16 @@ function shell() {
     applyLanguage(languageSelect.value);
     watchDynamicTranslations();
   }
-  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
+  // Delegate navigation clicks so dynamically translated/mobile-rendered nav buttons always work.
+  document.querySelector('nav')?.addEventListener('click', e => {
+    const button = e.target.closest('button[data-tab]');
+    if (!button) return;
+    e.preventDefault();
+    tab(button.dataset.tab).catch(error => {
+      console.error('RENT MATCH navigation error:', error);
+      notice('یہ آپشن ابھی نہیں کھل سکا۔ دوبارہ کوشش کریں۔');
+    });
+  });
   $('#mediaViewer').addEventListener('click', e => { if (e.target.id === 'mediaViewer' || e.target.closest('.media-viewer-close')) closeMedia(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMedia(); });
   $('#openPropertySearch').addEventListener('click', () => {
@@ -364,18 +373,34 @@ function setAppAccess() {
     document.querySelectorAll('nav button').forEach(button => button.classList.toggle('active', button.dataset.tab === 'search'));
   }
 }
-function tab(name) {
-  if (!state.user) { setAppAccess(); return; }
+async function tab(name) {
+  // Re-check the persisted Supabase session before silently refusing navigation.
+  if (!state.user && supabase) {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error && data?.user) {
+      state.user = data.user;
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', state.user.id).maybeSingle();
+      state.admin = profile?.role === 'admin';
+    }
+  }
+  if (!state.user) {
+    setAppAccess();
+    notice('آپ کا لاگ اِن سیشن موجود نہیں۔ براہِ کرم دوبارہ لاگ اِن کریں۔');
+    return;
+  }
   if (name === 'admin' && !state.admin) return notice('یہ حصہ صرف ایڈمن کے لیے ہے۔');
+  const section = document.getElementById(name);
+  if (!section) return notice('یہ آپشن دستیاب نہیں۔');
   state.tab = name;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
-  if (name === 'search') loadListings();
-  if (name === 'post') loadPostLimitStatus();
-  if (name === 'admin') loadAdmin();
-  if (name === 'premium') loadPremium();
-  if (name === 'mine') loadMyListings();
-  if (name === 'notifications') loadNotifications();
+  section.classList.remove('hidden');
+  if (name === 'search') await loadListings();
+  if (name === 'post') await loadPostLimitStatus();
+  if (name === 'admin') await loadAdmin();
+  if (name === 'premium') await loadPremium();
+  if (name === 'mine') await loadMyListings();
+  if (name === 'notifications') await loadNotifications();
 }
 function isVideoMedia(url) { return /\.(mp4|webm|mov)(\?|$)/i.test(String(url || '')); }
 function mediaButton(url, index, cover = false) {
