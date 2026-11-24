@@ -242,3 +242,12 @@ body.media-viewer-open{overflow:hidden}
 .payment-admin-row .payment-proof-link{display:flex;width:max-content;max-width:100%}
 .premium-form input[type=file]{max-width:100%;padding:10px;background:#fff;border:1px dashed #9db8a7;border-radius:10px}
 .payment-history-row .payment-proof-link{font-size:13px}
+
+
+/* Verified property agent profiles */
+.verified-agent-badge{background:#e8f6ed!important;color:#087443!important;border:1px solid #a8d9bb;font-weight:850}
+.agent-business-name{margin:7px 0 2px;color:#176b4b;font-size:13px;font-weight:800}
+.agent-profile-panel{margin-top:22px;padding:16px;border:1px solid #dce9e0;border-radius:14px;background:#fbfefc}
+.agent-profile-panel h3{margin:0 0 8px;color:#14583e}
+.agent-profile-panel .grid{margin-top:12px}
+.agent-profile-panel textarea{min-height:90px}
