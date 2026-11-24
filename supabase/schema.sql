@@ -37,17 +37,14 @@ REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, service_role;
 
 DROP POLICY IF EXISTS "public reads active listings" ON public.listings;
-CREATE POLICY "public reads active listings"
-  ON public.listings FOR SELECT TO public
-  USING (status = 'active');
 DROP POLICY IF EXISTS "owners read own listings" ON public.listings;
-CREATE POLICY "owners read own listings"
-  ON public.listings FOR SELECT TO authenticated
-  USING (owner_id = (select auth.uid()));
 DROP POLICY IF EXISTS "admins read all listings" ON public.listings;
-CREATE POLICY "admins read all listings"
+CREATE POLICY "public reads active listings"
+  ON public.listings FOR SELECT TO anon
+  USING (status = 'active');
+CREATE POLICY "authenticated reads active own and admin listings"
   ON public.listings FOR SELECT TO authenticated
-  USING (public.is_admin());
+  USING (status = 'active' OR owner_id = (select auth.uid()) OR public.is_admin());
 
 DROP POLICY IF EXISTS "profiles select own or admin" ON public.profiles;
 CREATE POLICY "profiles select own or admin"
@@ -183,3 +180,19 @@ CREATE INDEX IF NOT EXISTS listing_comments_author_id_idx ON public.listing_comm
 CREATE INDEX IF NOT EXISTS notifications_comment_id_idx ON public.notifications(comment_id);
 CREATE INDEX IF NOT EXISTS notifications_listing_id_idx ON public.notifications(listing_id);
 CREATE INDEX IF NOT EXISTS premium_payment_requests_user_id_idx ON public.premium_payment_requests(user_id);
+
+-- Public verified-agent card RPC is intentionally limited to 100 requested IDs.
+CREATE OR REPLACE FUNCTION public.get_active_agent_profiles(p_user_ids uuid[])
+RETURNS TABLE(user_id uuid, business_name text, contact_phone text, bio text)
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path TO ''
+AS $$
+  SELECT p.user_id, p.business_name, p.contact_phone, p.bio
+  FROM public.agent_profiles p
+  JOIN private.agent_entitlements e ON e.user_id = p.user_id
+  WHERE p_user_ids IS NOT NULL AND pg_catalog.cardinality(p_user_ids) <= 100
+    AND p.user_id = ANY(p_user_ids) AND e.active_until > pg_catalog.now();
+$$;
+COMMENT ON FUNCTION public.get_active_agent_profiles(uuid[]) IS
+'Publicly exposes limited business-card fields for currently active verified agents; accepts at most 100 user IDs.';
+GRANT EXECUTE ON FUNCTION public.get_active_agent_profiles(uuid[]) TO anon, authenticated;
