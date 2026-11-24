@@ -343,6 +343,11 @@ function card(x, showOwnerDelete = false) {
   const videoCount = photos.filter(isVideoMedia).length;
   const agentProfile = state.agentProfiles[x.owner_id];
   const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
+  const agentPhone = String(agentProfile?.contact_phone || '').replace(/[^\\d+]/g, '');
+  let agentWhatsapp = agentPhone.replace(/\\D/g, '');
+  if (agentWhatsapp.startsWith('00')) agentWhatsapp = agentWhatsapp.slice(2);
+  if (agentWhatsapp.startsWith('0')) agentWhatsapp = '92' + agentWhatsapp.slice(1);
+  else if (agentWhatsapp.startsWith('3') && agentWhatsapp.length === 10) agentWhatsapp = '92' + agentWhatsapp;
   let whatsapp = phone.replace(/\D/g, '');
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
   if (whatsapp.startsWith('0')) whatsapp = '92' + whatsapp.slice(1);
