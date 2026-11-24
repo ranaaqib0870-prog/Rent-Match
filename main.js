@@ -1011,32 +1011,46 @@ async function removeListing(id) {
 }
 async function start() {
   shell();
-  // Show the login/app shell immediately; never wait for network requests before painting the screen.
+  // Paint the sign-in screen immediately. Authentication and geolocation must
+  // never block the first usable screen on a slow mobile connection.
   setAppAccess();
   if (!supabase) {
     $('#accountStatus').textContent = 'ایپ چل رہی ہے، لیکن Supabase کی سیٹنگ ابھی درکار ہے۔';
     $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد تلاش شروع ہوگی۔';
     return;
   }
-  if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…';
-  // Resolve account and device location in parallel to avoid serial startup delays.
-  const locationTask = detectLocation().catch(error => { console.warn('Location lookup failed:', error); return null; });
-  await refreshUser();
-  setAppAccess();
-  await locationTask;
-  if (state.tab === 'search') await loadListings();
-  // Refresh the listing cards after login/logout so the comment box appears
-  // immediately when the user's authentication state changes.
+
+  // Subscribe before the initial session check so OAuth redirects are handled
+  // promptly, without waiting for unrelated startup work.
   supabase.auth.onAuthStateChange(() => {
     setTimeout(async () => {
-      await refreshUser();
-      setAppAccess();
-      if (state.tab === 'search') await loadListings();
-      if (state.tab === 'mine') await loadMyListings();
-      if (state.tab === 'post') await loadPostLimitStatus();
-      if (state.tab === 'premium') await loadPremium();
-      if (state.tab === 'admin' && state.admin) await loadAdmin();
+      try {
+        await refreshUser();
+        setAppAccess();
+        if (state.tab === 'search' && state.user) await loadListings();
+        if (state.tab === 'mine' && state.user) await loadMyListings();
+        if (state.tab === 'post' && state.user) await loadPostLimitStatus();
+        if (state.tab === 'premium' && state.user) await loadPremium();
+        if (state.tab === 'admin' && state.admin) await loadAdmin();
+      } catch (error) {
+        console.warn('Authentication state refresh failed:', error);
+      }
     }, 0);
+  });
+
+  // Run account refresh and location lookup in the background. A slow or
+  // unavailable request must not keep the login page spinning.
+  refreshUser().then(async () => {
+    setAppAccess();
+    if (state.user && state.tab === 'search') {
+      try { await loadListings(); }
+      catch (error) { console.warn('Initial listings load failed:', error); }
+    }
+  }).catch(error => console.warn('Initial session check failed:', error));
+
+  detectLocation().catch(error => {
+    console.warn('Location lookup failed:', error);
+    return null;
   });
 }
 start().catch(error => {
