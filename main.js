@@ -176,8 +176,7 @@ function shell() {
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
   <main class="wrap">
-    <div class="page-layout">
-      <div class="page-content">      <div class="page-content">
+    <div class="page-layout">      <div class="page-content">      <div class="page-content">
     <section id="search" class="tab">
       <div class="search-intro">
         <span class="eyebrow">RENT MATCH</span>
@@ -416,13 +415,12 @@ async function loadListings(form = null, useLocation = true, target = 'results')
     }
   }
   if (useLocation && !state.location) {
-    if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کی لوکیشن دستیاب نہیں؛ کسی شہر یا علاقے کا نام لکھ کر تلاش کریں۔';
-    render([], target);
+    if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کی لوکیشن دستیاب نہیں؛ کسی شہر یا علاقے کا نام لکھ کر تلاش کریں۔';    render([], target);
     return;
   }
   if (useLocation && state.location) {
     const lat = state.location.latitude, lng = state.location.longitude;
-    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
+    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
     q = q.gte('latitude', lat - latDelta).lte('latitude', lat + latDelta)
       .gte('longitude', lng - lngDelta).lte('longitude', lng + lngDelta);
   }
