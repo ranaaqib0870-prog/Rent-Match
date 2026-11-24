@@ -206,7 +206,7 @@ function shell() {
         <div class="earning-grid">
           <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>40 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>پروفائل پر کاروباری رابطہ نمبر</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
-          <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
+          <article class="earning-card"><span class="earning-badge">📢 جلد دستیاب</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے لیے اشتہاری جگہ۔</p><strong>کاروباری اشتہارات کا نظام جلد دستیاب ہوگا۔</strong></article>
         </div>
         <p class="earning-note">نوٹ: پریمیم اور ایجنٹ پیکج کی ادائیگی اسکرین شاٹ اور ایڈمن کی تصدیق کے بعد فعال ہوگی۔ خودکار آن لائن گیٹ وے اور نمایاں اشتہار ابھی فعال نہیں ہیں۔</p>
       </section></div>
@@ -885,6 +885,9 @@ async function start() {
       await refreshUser();
       if (state.tab === 'search') await loadListings();
       if (state.tab === 'mine') await loadMyListings();
+      if (state.tab === 'post') await loadPostLimitStatus();
+      if (state.tab === 'premium') await loadPremium();
+      if (state.tab === 'admin' && state.admin) await loadAdmin();
     }, 0);
   });
 }
