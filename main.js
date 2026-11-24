@@ -95,8 +95,12 @@ const translations = {
   'منظور کریں':'Approve','مسترد کریں':'Reject','ادائیگی کی درخواست منظور ہو گئی۔':'Payment request approved.',
   'ادائیگی کی درخواست مسترد ہو گئی۔':'Payment request rejected.','ادائیگی کی تصدیق نہیں ہو سکی: ':'Could not review payment: ',
   'پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ':'Could not load Premium status: ','صرف ایڈمن ادائیگی منظور کر سکتا ہے۔':'Only an administrator can approve payments.',
-  'ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'Upload the payment screenshot.','اسکرین شاٹ دیکھیں':'View screenshot','اسکرین شاٹ دستیاب نہیں':'Screenshot unavailable','ادائیگی کا اسکرین شاٹ':'Payment screenshot','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 7-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
-  'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.'
+  'ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'Upload the payment screenshot.','اسکرین شاٹ دیکھیں':'View screenshot','اسکرین شاٹ دستیاب نہیں':'Screenshot unavailable','ادائیگی کا اسکرین شاٹ':'Payment screenshot','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 10-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
+  'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.',
+  'ایجنٹ بزنس پروفائل':'Agent Business Profile','ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔':'Complete your business profile after your Agent package is activated.',
+  'کاروبار / ایجنسی کا نام':'Business / Agency Name','رابطہ موبائل نمبر':'Contact Mobile Number','مختصر تعارف':'Short Description','پروفائل محفوظ کریں':'Save Profile',
+  'کاروبار کا نام اور رابطہ نمبر لازمی درج کریں۔':'Business name and contact number are required.','آپ کا ایجنٹ پروفائل محفوظ ہو گیا ہے۔':'Your Agent profile has been saved.',
+  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent'
 
 };
 let currentLanguage = 'ur';
@@ -441,7 +445,7 @@ async function loadListings(form = null, useLocation = true, target = 'results')
   const { data, error } = await q;
   if (error) { notice('پراپرٹیز لوڈ نہیں ہوئیں: ' + error.message); return; }
   state.listings = data || [];
-  render(state.listings, target);
+  await render(state.listings, target);
 }
 async function loginWithProvider(provider) {
   if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
