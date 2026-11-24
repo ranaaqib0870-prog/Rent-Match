@@ -421,7 +421,7 @@ function getPosition() {
     if (!navigator.geolocation) return resolve(null);
     navigator.geolocation.getCurrentPosition(
       p => resolve({ latitude: p.coords.latitude, longitude: p.coords.longitude }),
-      () => resolve(null), { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      () => resolve(null), { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
     );
   });
 }
@@ -905,8 +905,11 @@ async function start() {
     return;
   }
   await refreshUser();
-  await detectLocation();
-  await loadListings();
+  if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…';
+  // Do not block the whole app while the browser asks for location permission.
+  detectLocation().then(() => {
+    if (state.tab === 'search') loadListings();
+  }).catch(error => console.warn('Location lookup failed:', error));
   // Refresh the listing cards after login/logout so the comment box appears
   // immediately when the user's authentication state changes.
   supabase.auth.onAuthStateChange(() => {
