@@ -105,7 +105,7 @@ const translations = {
   'ایجنٹ بزنس پروفائل':'Agent Business Profile','ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔':'Complete your business profile after your Agent package is activated.',
   'کاروبار / ایجنسی کا نام':'Business / Agency Name','رابطہ موبائل نمبر':'Contact Mobile Number','مختصر تعارف':'Short Description','پروفائل محفوظ کریں':'Save Profile',
   'کاروبار کا نام اور رابطہ نمبر لازمی درج کریں۔':'Business name and contact number are required.','آپ کا ایجنٹ پروفائل محفوظ ہو گیا ہے۔':'Your Agent profile has been saved.',
-  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent','پرائیویسی پالیسی':'Privacy Policy','استعمال کی شرائط':'Terms of Use'
+  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent','پرائیویسی پالیسی':'Privacy Policy','استعمال کی شرائط':'Terms of Use','صارفین کی رپورٹس':'User Reports','ابھی کوئی رپورٹ موصول نہیں ہوئی۔':'No reports have been received yet.','رپورٹس لوڈ نہیں ہو سکیں: ':'Could not load reports: ','پراپرٹی دستیاب نہیں':'Property unavailable','اشتہار: ':'Listing: ','رپورٹ کنندہ: ':'Reporter: ','کارروائی مکمل / اشتہار غیر فعال':'Action completed / listing inactive'
 
 };
 let currentLanguage = 'ur';
