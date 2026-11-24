@@ -1,56 +1,69 @@
 # RENT MATCH
 
-A responsive Urdu-first rental marketplace for houses and shops.
+RENT MATCH is an Urdu-first, responsive rental marketplace for houses and shops, built with Vite and Supabase.
 
-## Features
-- Gmail email OTP sign-in (Supabase Auth)
-- Publish a property listing immediately after submission
-- Search active houses and shops by area, type, rent and advance
-- Optional nearby search using the device's location (requires browser location permission and listing coordinates)
-- Photo upload to Supabase Storage
-- Call / WhatsApp contact
-- Wanted-property matching
-- User-submitted listing reports
-- Admin tools to remove listings
+## Current product features
 
-## 1. Configure Supabase
-1. Create a Supabase project.
-2. Open **SQL Editor** and run the complete file `supabase/schema.sql`.
-3. In **Authentication → Providers → Email**, enable Email OTP. Configure the email provider/template so the message contains the one-time code (token).
-4. In **Authentication → URL Configuration**, set your deployed website URL and allowed redirect URLs.
-5. Copy the Project URL and anon/publishable key from **Project Settings → API**.
-6. Copy `.env.example` to `.env` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-7. Never put the Supabase service-role key in this website or in GitHub.
+- Urdu and English interface with RTL/LTR switching.
+- Google and Facebook OAuth sign-in (provider credentials must be configured in Supabase).
+- Browse active house/shop listings, search by area, type, rent and advance, and optional nearby search.
+- Post a listing with up to five images/videos; image limit 5 MB each and video limit 25 MB each.
+- One free listing per account every 10 days.
+- Premium plans: 7 days Rs 300, 15 days Rs 500, 30 days Rs 900. Active Premium removes the 10-day posting interval.
+- Property Agent plans: Starter 7 days Rs 500, Professional 15 days Rs 900, Business 30 days Rs 1,500. Active Agent entitlement allows up to 40 active listings.
+- Manual EasyPaisa/JazzCash payment proof submission with private screenshot storage and administrator review.
+- Verified Agent profiles, listing comments, owner notifications, reports, call/WhatsApp contact, and owner listing removal.
+- Admin listing moderation and payment approval.
 
-## 2. Run locally
+## Supabase configuration
+
+This repository is connected to an existing Supabase project. The file `supabase/schema.sql` is an incremental migration/hardening script for the current database; it is not a complete empty-project bootstrap schema.
+
+Required Vercel environment variables (Production and Preview):
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY` (publishable/anon client key only)
+
+Never place a Supabase service-role key in client code or a VITE_ variable.
+
+### Authentication
+
+In Supabase Authentication:
+1. Enable Google and/or Facebook under Auth Providers.
+2. Add each provider's OAuth Client ID and Client Secret from the provider's developer console.
+3. Add the deployed domain to Supabase Auth's Site URL and Redirect URLs.
+4. Add the Supabase callback URL shown in the provider settings to the provider's allowed redirect/callback URLs.
+
+The app's Google/Facebook buttons cannot complete OAuth until the matching provider credentials and callback URLs are configured. These credentials cannot be inferred from the code repository.
+
+### Payments
+
+Payments are manual, not an automatic online payment gateway. Users transfer the displayed package amount to the published EasyPaisa/JazzCash account, upload a screenshot, and wait for an administrator to verify actual receipt before approval. Do not approve a request based on the screenshot alone if the funds have not arrived.
+
+### Admin account
+
+An existing administrator role is present in the connected database. Keep admin access limited to trusted operators. Never expose database SQL editor or service-role credentials to ordinary users.
+
+## Local development
+
 Requires Node.js 20+.
+
 ```bash
 npm install
 npm run dev
 ```
-For a production build:
+
+Production build:
+
 ```bash
 npm run build
 ```
-Deploy the generated `dist/` directory to a static host such as Netlify, Vercel or Cloudflare Pages. Add the same two VITE_ environment variables in the hosting provider's environment settings, then redeploy.
 
-## 3. Make your account an admin
-1. Sign in to the app once using your Gmail address.
-2. In Supabase SQL Editor, run the following and replace the address with your own verified Gmail:
-```sql
-update public.profiles set role = 'admin' where email = 'YOUR_GMAIL_ADDRESS';
-```
-Do not expose SQL Editor access to ordinary users.
+Vercel is connected to the GitHub repository and deploys the `main` branch.
 
-## Important setup notes
-- The app's nearby search uses browser geolocation and latitude/longitude fields. Users can still type a city or area manually.
-- Nearby search currently uses an approximate 20 km coordinate box, not an exact municipal/neighborhood boundary. Listings without coordinates will not appear in that nearby-only result until they are updated with coordinates.
-- Email OTP delivery depends on Supabase Auth email configuration and provider limits; GitHub code alone cannot enable or verify email delivery.
-- Public listing photos are stored in the public `listing-photos` bucket. Do not upload private documents or sensitive images.
-- Test sign-in, listing publication, photo uploads, reports, access policies and admin actions before public launch.
-- Add privacy policy, terms and contact details, and obtain appropriate legal/privacy review for Pakistan operations.
-- Do not collect rental deposits through this starter app.
+## Safety and launch checklist
 
-## Configuration files
-- `supabase/schema.sql`: database tables, row-level security policies and photo storage setup.
-- `.env.example`: template for the two public client-side Supabase settings.
+- Test Google and Facebook OAuth using real accounts after provider setup.
+- Test first listing, second listing inside 10 days, listing after 10 days, Premium approval, Agent approval, and the 40-active-listing cap.
+- Test image/video upload, removal, comments, reports, notifications, owner delete, and admin moderation.
+- Add and publish a reviewed Privacy Policy and Terms of Use before broad public promotion.
+- Users should view the property and verify ownership before paying any advance. RENT MATCH does not hold rental deposits or guarantee landlords, tenants, or property condition.
