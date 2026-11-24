@@ -32,7 +32,7 @@ const translations = {
   'اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں':'Promote Your Listing and Find a Tenant Faster',
   'عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی.':'Basic property listings will always be free. Optional paid features will provide extra visibility.',
   'نمایاں پراپرٹی اشتہار':'Featured Property Listing','اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔':'Your listing will appear above regular listings with a highlighted design.',
-  'پراپرٹی ڈیلر پیکج':'Property Agent Packages','ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔':'Dedicated plans for property dealers and agents, with multiple listings and a business profile.','اسٹارٹر ایجنٹ — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','پروفیشنل ایجنٹ — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','بزنس ایجنٹ — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','20 فعال اشتہارات تک':'Up to 20 active listings','الگ ایجنٹ پروفائل اور Verified Agent بیج':'Separate agent profile and Verified Agent badge','تمام اشتہارات ایک جگہ مینیج کریں':'Manage all listings in one place','رابطہ نمبر اور نمایاں اشتہارات':'Visible contact details and promoted listings','ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔':'Agent package payments will be enabled soon.',
+  'پراپرٹی ڈیلر پیکج':'Property Agent Packages','ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔':'Dedicated plans for property dealers and agents, with multiple listings and a business profile.','اسٹارٹر ایجنٹ — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','پروفیشنل ایجنٹ — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','بزنس ایجنٹ — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','20 فعال اشتہارات تک':'Up to 20 active listings','الگ ایجنٹ پروفائل اور Verified Agent بیج':'Separate agent profile and Verified Agent badge','تمام اشتہارات ایک جگہ مینیج کریں':'Manage all listings in one place','رابطہ نمبر اور نمایاں اشتہارات':'Visible contact details and promoted listings','ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔':'Select an agent plan and submit payment for admin verification.',
   'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
   'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
@@ -83,8 +83,8 @@ const translations = {
   'آپ کا پریمیم اسٹیٹس':'Your Premium status','پریمیم فعال ہے تا':'Premium active until',
   'ابھی پریمیم فعال نہیں':'Premium is not active yet','ادائیگی کا طریقہ':'Payment method',
   'اکاؤنٹ ٹائٹل':'Account title','اکاؤنٹ نمبر':'Account number',
-  'رقم بھیجنے کے بعد ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'After sending the payment, enter the transaction ID.',
-  'پیکج':'Package','7 دن — Rs 300':'7 days — Rs 300','15 دن — Rs 500':'15 days — Rs 500',
+  'رقم بھیجنے کے بعد ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'After sending the payment, upload your payment screenshot.',
+  'پیکج':'Package','— Property Agent Packages —':'— Property Agent Packages —','Starter Agent — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','Professional Agent — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','Business Agent — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','7 دن — Rs 300':'7 days — Rs 300','15 دن — Rs 500':'15 days — Rs 500',
   '30 دن — Rs 900':'30 days — Rs 900','ادائیگی کا اسکرین شاٹ':'Payment screenshot','JPG, PNG یا WEBP — زیادہ سے زیادہ 5MB':'JPG, PNG or WEBP — max 5MB',
   'ادائیگی کرنے والے کا نام':'Sender name','ادائیگی کی درخواست جمع کریں':'Submit payment for verification',
   'درخواست کی ہسٹری':'Payment request history','ابھی کوئی ادائیگی درخواست نہیں۔':'No payment requests yet.',
@@ -177,7 +177,7 @@ function shell() {
     </nav></div></header>
   <main class="wrap">
     <div class="page-layout">
-      <div class="page-content">
+      <div class="page-content">      <div class="page-content">
     <section id="search" class="tab">
       <div class="search-intro">
         <span class="eyebrow">RENT MATCH</span>
@@ -189,7 +189,7 @@ function shell() {
         <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
           <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
-          <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>20 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>رابطہ نمبر اور نمایاں اشتہارات</li></ul><p class="muted">ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔</p></article>
+          <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>20 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>رابطہ نمبر اور نمایاں اشتہارات</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
           <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
         </div>
         <p class="earning-note">نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا۔</p>
@@ -257,6 +257,10 @@ function shell() {
             <option value="premium_7_days">7 دن — Rs 300</option>
             <option value="premium_15_days">15 دن — Rs 500</option>
             <option value="premium_30_days">30 دن — Rs 900</option>
+            <option disabled>— Property Agent Packages —</option>
+            <option value="agent_starter_7_days">Starter Agent — 7 دن — Rs 500</option>
+            <option value="agent_professional_15_days">Professional Agent — 15 دن — Rs 900</option>
+            <option value="agent_business_30_days">Business Agent — 30 دن — Rs 1,500</option>
           </select></label>
           <label>ادائیگی کا طریقہ<select name="payment_method" required>
             <option value="easypaisa">EasyPaisa</option>
@@ -300,6 +304,7 @@ function shell() {
   $('#logout').addEventListener('click', logout);
   $('#premiumPaymentForm').addEventListener('submit', submitPremiumPayment);
   $('#openPremiumFromCard').addEventListener('click', () => tab('premium'));
+  $('#openAgentPackages').addEventListener('click', () => { tab('premium'); const s = $('#premiumPaymentForm select[name="plan_code"]'); if (s) s.value = 'agent_starter_7_days'; });
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
 }
 function tab(name) {
@@ -417,7 +422,7 @@ async function loadListings(form = null, useLocation = true, target = 'results')
   }
   if (useLocation && state.location) {
     const lat = state.location.latitude, lng = state.location.longitude;
-    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
+    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));    const latDelta = 20 / 111, lngDelta = 20 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
     q = q.gte('latitude', lat - latDelta).lte('latitude', lat + latDelta)
       .gte('longitude', lng - lngDelta).lte('longitude', lng + lngDelta);
   }
@@ -653,7 +658,7 @@ async function submitPremiumPayment(e) {
   if (!supabase || !state.user) return notice('ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔');
   const f = new FormData(e.target);
   const plan = String(f.get('plan_code') || '');
-  const amounts = { premium_7_days:300, premium_15_days:500, premium_30_days:900 };
+  const amounts = { premium_7_days:300, premium_15_days:500, premium_30_days:900, agent_starter_7_days:500, agent_professional_15_days:900, agent_business_30_days:1500 };
   const screenshot = f.get('payment_screenshot');
   if (!amounts[plan]) return;
   if (!(screenshot instanceof File) || !screenshot.size) return notice('ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔');
@@ -680,7 +685,7 @@ async function submitPremiumPayment(e) {
     if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'ادائیگی کی درخواست جمع کریں'; }
     return notice('ادائیگی جمع نہیں ہوئی: ' + error.message);
   }
-  notice('آپ کی ادائیگی کی درخواست موصول ہو گئی ہے۔ تصدیق کے بعد Premium فعال ہو جائے گا۔');
+  notice(plan.startsWith('agent_') ? 'آپ کی ایجنٹ پیکج ادائیگی کی درخواست موصول ہو گئی ہے۔ رقم کی تصدیق کے بعد ایجنٹ پیکج فعال ہوگا۔' : 'آپ کی ادائیگی کی درخواست موصول ہو گئی ہے۔ تصدیق کے بعد Premium فعال ہو جائے گا۔');
   e.target.reset();
   await loadPremium();
 }
