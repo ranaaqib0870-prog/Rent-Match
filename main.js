@@ -578,7 +578,8 @@ async function publish(e) {
     const { error } = await supabase.from('listings').insert(payload);
     if (error) {
       if (String(error.message || '').includes('FREE_LISTING_LIMIT')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
-      if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED')) throw new Error('آپ کے ایجنٹ پیکج کی 40 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
+      if (String(error.message || '').includes('FREE_LISTING_LIMIT_10_DAYS')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+      if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED') || String(error.message || '').includes('AGENT_LISTING_LIMIT_40')) throw new Error('آپ کے ایجنٹ پیکج کی 40 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
       throw new Error('اشتہار جمع نہیں ہوا: ' + error.message);
     }
     notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
