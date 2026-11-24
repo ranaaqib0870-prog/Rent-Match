@@ -353,13 +353,20 @@ function setAppAccess() {
   $('#authGate')?.classList.toggle('hidden', allowed);
   $('#appHeader')?.classList.toggle('hidden', !allowed);
   $('#appMain')?.classList.toggle('hidden', !allowed);
+  // Admin navigation is visible only to accounts whose Supabase profile role is admin.
+  document.querySelector('nav button[data-tab="admin"]')?.classList.toggle('hidden', !allowed || !state.admin);
   if (!allowed) {
     state.tab = 'search';
     updateNotificationBadge(0);
+  } else if (!state.admin && state.tab === 'admin') {
+    state.tab = 'search';
+    document.querySelectorAll('.tab').forEach(section => section.classList.toggle('hidden', section.id !== 'search'));
+    document.querySelectorAll('nav button').forEach(button => button.classList.toggle('active', button.dataset.tab === 'search'));
   }
 }
 function tab(name) {
   if (!state.user) { setAppAccess(); return; }
+  if (name === 'admin' && !state.admin) return notice('یہ حصہ صرف ایڈمن کے لیے ہے۔');
   state.tab = name;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
