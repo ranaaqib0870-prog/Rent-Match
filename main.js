@@ -8,7 +8,7 @@ const supabase = url && anon ? createClient(url, anon, {
 }) : null;
 
 const $ = (s) => document.querySelector(s);
-const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null };
+const state = { user: null, listings: [], tab: 'search', admin: false, location: null, myListings: false, notificationChannel: null, agentProfiles: {} };
 
 const translations = {
   'صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے':'The right property, the right tenant — made easy',
@@ -36,8 +36,8 @@ const translations = {
   'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
   'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
-  'عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 7 days. Premium plans allow additional listings.',
-  'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 7 days, or choose a Premium plan for additional listings.',
+  'عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 10 days. Premium plans allow additional listings.',
+  'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 10 days, or choose a Premium plan for additional listings.',
   'نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا.':'Note: These are introductory suggested prices. Payments and promoted listings will only activate after online payments are set up.',
   'دستیاب پراپرٹیز':'Available Properties','تفصیل دیکھنے کے لیے کارڈ کھولیں':'Open a card to view details',
   'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…':'Finding properties in your area…','5 مرلہ، 2 کمرے':'5 marla, 2 rooms',
@@ -185,7 +185,7 @@ function shell() {
         <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
       </div>
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
-        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
+        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
           <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>20 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>رابطہ نمبر اور نمایاں اشتہارات</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
@@ -249,7 +249,7 @@ function shell() {
           <h3>ادائیگی اکاؤنٹ</h3>
           <p><strong>اکاؤنٹ ٹائٹل:</strong> Rana Aqib</p>
           <p><strong>EasyPaisa / JazzCash:</strong> <bdi>03326830870</bdi></p>
-          <p class="muted">رقم بھیجنے کے بعد ٹرانزیکشن آئی ڈی درج کریں۔ ادائیگی کی تصدیق ایڈمن کرے گا۔</p>
+          <p class="muted">رقم بھیجنے کے بعد ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔ ادائیگی کی تصدیق ایڈمن کرے گا۔</p>
         </div>
         <form id="premiumPaymentForm" class="grid premium-form">
           <label>پیکج<select name="plan_code" required>
@@ -271,6 +271,16 @@ function shell() {
         </form>
         <h3 class="payment-history-title">درخواست کی ہسٹری</h3>
         <div id="premiumHistory"></div>
+        <section class="agent-profile-panel">
+          <h3>ایجنٹ بزنس پروفائل</h3>
+          <p id="agentProfileStatus" class="muted">ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔</p>
+          <form id="agentProfileForm" class="grid hidden">
+            <label>کاروبار / ایجنسی کا نام<input name="business_name" maxlength="100" required></label>
+            <label>رابطہ موبائل نمبر<input name="contact_phone" type="tel" maxlength="25" required></label>
+            <label class="wide">مختصر تعارف<textarea name="bio" maxlength="500" placeholder="اپنی پراپرٹی سروسز کا مختصر تعارف لکھیں"></textarea></label>
+            <button class="primary" type="submit">پروفائل محفوظ کریں</button>
+          </form>
+        </section>
       </div>
     </section>
     <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminPayments" class="admin-payments"></div><h3>تمام پراپرٹی اشتہارات</h3><div id="adminListings" class="cards"></div></div></section>
@@ -302,6 +312,7 @@ function shell() {
   $('#facebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#logout').addEventListener('click', logout);
   $('#premiumPaymentForm').addEventListener('submit', submitPremiumPayment);
+  $('#agentProfileForm').addEventListener('submit', saveAgentProfile);
   $('#openPremiumFromCard').addEventListener('click', () => tab('premium'));
   $('#openAgentPackages').addEventListener('click', () => { tab('premium'); const s = $('#premiumPaymentForm select[name="plan_code"]'); if (s) s.value = 'agent_starter_7_days'; });
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
@@ -326,6 +337,7 @@ function card(x, showOwnerDelete = false) {
   const photos = Array.isArray(x.photo_urls) ? x.photo_urls : [];
   const cover = photos[0] ? mediaButton(photos[0], 0, true) : '<div class="property-placeholder">🏠<span>تصویر دستیاب نہیں</span></div>';
   const videoCount = photos.filter(isVideoMedia).length;
+  const agentProfile = state.agentProfiles[x.owner_id];
   const phone = String(x.owner_phone || '').replace(/[^\d+]/g, '');
   let whatsapp = phone.replace(/\D/g, '');
   if (whatsapp.startsWith('00')) whatsapp = whatsapp.slice(2);
@@ -335,7 +347,8 @@ function card(x, showOwnerDelete = false) {
   return `<article class="card property-card">
     <div class="property-media">${cover}${photos.length > 1 ? `<span class="photo-count">📷 ${photos.length} میڈیا${videoCount ? ` · ${videoCount} ویڈیو` : ''}</span>` : ''}</div>
     <div class="body">
-      <div class="property-tags"><span class="pill">${esc(x.type)}</span><span class="pill">📍 ${esc(x.area)}</span></div>
+      <div class="property-tags"><span class="pill">${esc(x.type)}</span><span class="pill">📍 ${esc(x.area)}</span>${agentProfile ? `<span class="pill verified-agent-badge">✓ Verified Agent</span>` : ''}</div>
+      ${agentProfile ? `<div class="agent-business-name">🏢 ${esc(agentProfile.business_name)}</div>` : ''}
       <div class="price">Rs ${Number(x.rent).toLocaleString('en-PK')} <small>/ ماہ</small></div>
       <div class="property-summary">${esc(x.size || 'مزید تفصیل کے لیے کلک کریں')}</div>
       <button class="primary details-toggle" type="button" data-details="${esc(x.id)}" aria-expanded="false">تفصیل دیکھیں ↓</button>
@@ -359,9 +372,10 @@ function card(x, showOwnerDelete = false) {
     </div>
   </article>`;
 }
-function render(items, target = 'results') {
+async function render(items, target = 'results') {
   const el = $('#' + target);
   if (!el) return;
+  await loadActiveAgentProfiles(items || []);
   el.innerHTML = items?.length ? items.map(item => card(item, target === 'myListings')).join('') : '<div class="empty">اس وقت کوئی مناسب پراپرٹی نہیں ملی۔</div>';
   el.querySelectorAll('[data-open-media]').forEach(b => b.addEventListener('click', () => openMedia(b.dataset.openMedia, b.dataset.mediaType)));
   el.querySelectorAll('[data-details]').forEach(b => b.addEventListener('click', () => {
@@ -498,7 +512,7 @@ async function publish(e) {
   };
   const { error } = await supabase.from('listings').insert(payload);
   if (error) {
-    if (String(error.message || '').includes('FREE_LISTING_LIMIT')) return notice('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+    if (String(error.message || '').includes('FREE_LISTING_LIMIT')) return notice('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
     return notice('اشتہار جمع نہیں ہوا: ' + error.message);
   }
   notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
@@ -513,7 +527,7 @@ async function matchWanted(e) {
     .lte('rent', Number(f.get('rent'))).lte('advance', Number(f.get('advance') || 999999999));
   const { data, error } = await q;
   if (error) return notice(error.message);
-  render(data || [], 'wantedResults');
+  await render(data || [], 'wantedResults');
 }
 async function reportListing(id) {
   if (!supabase || !state.user) return notice('رپورٹ کرنے کے لیے پہلے لاگ اِن کریں۔');
@@ -596,7 +610,7 @@ async function loadMyListings() {
     .eq('owner_id', state.user.id).order('created_at', { ascending: false });
   if (error) return notice('آپ کے اشتہارات لوڈ نہیں ہوئے: ' + error.message);
   state.myListings = true;
-  render(data || [], 'myListings');
+  await render(data || [], 'myListings');
   state.myListings = false;
 }
 async function archiveOwnListing(id) {
@@ -615,8 +629,55 @@ async function loadAdmin() {
   $('#adminStatus').textContent = 'ایڈمن موڈ فعال ہے۔';
   const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
   if (error) return notice(error.message);
-  render(data || [], 'adminListings');
+  await render(data || [], 'adminListings');
   await loadPaymentRequests();
+}
+
+async function loadActiveAgentProfiles(items) {
+  const ids = [...new Set((items || []).map(x => x.owner_id).filter(Boolean))];
+  if (!ids.length || !supabase) { state.agentProfiles = {}; return; }
+  const { data, error } = await supabase.rpc('get_active_agent_profiles', { p_user_ids: ids });
+  if (error) { console.warn('Could not load verified agent profiles:', error.message); state.agentProfiles = {}; return; }
+  state.agentProfiles = Object.fromEntries((data || []).map(p => [p.user_id, p]));
+}
+
+async function loadAgentProfile() {
+  const statusEl = $('#agentProfileStatus'), form = $('#agentProfileForm');
+  if (!statusEl || !form || !state.user) return;
+  const { data: status, error: statusError } = await supabase.rpc('get_my_agent_status');
+  if (statusError) { statusEl.textContent = 'Agent status could not be loaded: ' + statusError.message; form.classList.add('hidden'); return; }
+  if (!status?.active) {
+    statusEl.textContent = 'اپنا Agent package خریدیں اور admin approval کے بعد یہاں اپنا business profile بنائیں۔';
+    form.classList.add('hidden'); return;
+  }
+  const { data, error } = await supabase.from('agent_profiles').select('business_name,contact_phone,bio').eq('user_id', state.user.id).maybeSingle();
+  if (error) { statusEl.textContent = 'Profile could not be loaded: ' + error.message; return; }
+  form.classList.remove('hidden');
+  form.elements.business_name.value = data?.business_name || '';
+  form.elements.contact_phone.value = data?.contact_phone || '';
+  form.elements.bio.value = data?.bio || '';
+  const until = status.active_until ? new Date(status.active_until).toLocaleDateString() : '';
+  statusEl.textContent = 'Verified Agent package active' + (until ? ' until ' + until : '') + '. Complete your public business profile below.';
+}
+
+async function saveAgentProfile(e) {
+  e.preventDefault();
+  if (!supabase || !state.user) return notice('پہلے لاگ اِن کریں۔');
+  const form = e.currentTarget, data = new FormData(form);
+  const business_name = String(data.get('business_name') || '').trim();
+  const contact_phone = String(data.get('contact_phone') || '').trim();
+  const bio = String(data.get('bio') || '').trim();
+  if (!business_name || !contact_phone) return notice('کاروبار کا نام اور رابطہ نمبر لازمی درج کریں۔');
+  const button = form.querySelector('button[type="submit"]');
+  if (button) button.disabled = true;
+  const { error } = await supabase.from('agent_profiles').upsert({
+    user_id: state.user.id, business_name, contact_phone, bio
+  }, { onConflict: 'user_id' });
+  if (button) button.disabled = false;
+  if (error) return notice('ایجنٹ پروفائل محفوظ نہیں ہوا: ' + error.message);
+  notice('آپ کا ایجنٹ پروفائل محفوظ ہو گیا ہے۔');
+  await loadAgentProfile();
+  await loadListings();
 }
 
 async function loadPremium() {
@@ -635,6 +696,7 @@ async function loadPremium() {
     ? 'پریمیم فعال ہے تا: ' + new Date(until).toLocaleString()
     : 'ابھی پریمیم فعال نہیں۔';
   if (historyError) return notice(historyError.message);
+  await loadAgentProfile();
   const statusLabel = { pending:'زیرِ تصدیق', approved:'منظور', rejected:'مسترد' };
   const historyRows = await Promise.all((requests || []).map(async r => {
     const { data: proof } = r.screenshot_path
