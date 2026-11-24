@@ -212,7 +212,7 @@ function shell() {
       <div id="results" class="cards"></div>
     </section>
     <section id="post" class="tab hidden"><div class="panel"><h2>پراپرٹی کا اشتہار لگائیں</h2>
-      <form id="postForm" class="grid">
+      <p id="postLimitStatus" class="notice">اشتہار لگانے کا اسٹیٹس چیک کیا جا رہا ہے…</p><form id="postForm" class="grid">
         <label>قسم<select name="type"><option>گھر</option><option>دکان</option></select></label>
         <label>شہر / علاقہ<input name="area" required></label>
         <label>ماہانہ کرایہ<input name="rent" type="number" min="1" required></label>
@@ -326,6 +326,7 @@ function tab(name) {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
   if (name === 'search') loadListings();
+  if (name === 'post') loadPostLimitStatus();
   if (name === 'admin') loadAdmin();
   if (name === 'premium') loadPremium();
   if (name === 'mine') loadMyListings();
@@ -425,7 +426,7 @@ async function detectLocation(showMessage = false) {
 }
 async function loadListings(form = null, useLocation = true, target = 'results') {
   if (!supabase) { if ($('#locationStatus')) $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد پراپرٹیز لوڈ ہوں گی۔'; return; }
-  let q = supabase.from('listings').select('*').eq('status', 'active').order('created_at', { ascending: false });
+  let q = supabase.from('listings').select('*').eq('status', 'active').order('created_at', { ascending: false }).limit(100);
   if (form) {
     const area = String(form.get('area') || '').trim();
     const type = form.get('type'), rent = form.get('rent'), advance = form.get('advance');
@@ -493,40 +494,90 @@ async function logout() {
   $('#accountStatus').textContent = 'آپ لاگ آؤٹ ہیں۔';
   $('#logout').classList.add('hidden');
 }
+async function loadPostLimitStatus() {
+  const el = $('#postLimitStatus');
+  if (!el) return;
+  if (!state.user) { el.textContent = 'اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔'; return; }
+  const { data, error } = await supabase.rpc('get_listing_post_status');
+  if (error) { el.textContent = 'آپ کا اشتہار لگانے کا اسٹیٹس ابھی لوڈ نہیں ہو سکا۔'; return; }
+  const status = Array.isArray(data) ? data[0] : data;
+  if (status?.is_allowed) {
+    el.textContent = status.is_premium ? 'آپ کا Premium فعال ہے؛ آپ اضافی اشتہارات لگا سکتے ہیں۔' : 'آپ کا اگلا اشتہار لگانے کا حق دستیاب ہے۔';
+  } else {
+    const date = status?.next_free_at ? new Date(status.next_free_at).toLocaleDateString() : '';
+    el.textContent = 'آپ کا مفت اشتہار استعمال ہو چکا ہے۔ اگلا مفت اشتہار ' + (date || '10 دن بعد') + ' لگا سکیں گے۔ اضافی اشتہارات کے لیے Premium پیکج دیکھیں۔';
+  }
+}
 async function publish(e) {
   e.preventDefault();
   if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
   if (!state.user) return notice('پہلے Google یا Facebook سے لاگ اِن کریں۔');
-  const f = new FormData(e.target), phone = String(f.get('owner_phone') || '').trim();
-  if (!phone) return notice('موبائل نمبر درج کریں۔');
+  const form = e.currentTarget;
+  const f = new FormData(form);
+  const phone = String(f.get('owner_phone') || '').trim();
+  const area = String(f.get('area') || '').trim();
+  const rent = Number(f.get('rent'));
+  const advance = Number(f.get('advance') || 0);
+  if (!area) return notice('شہر یا علاقہ درج کریں۔');
+  if (!phone || phone.replace(/\D/g, '').length < 10) return notice('درست موبائل نمبر درج کریں۔');
+  if (!Number.isFinite(rent) || rent <= 0 || !Number.isFinite(advance) || advance < 0) return notice('کرایہ اور ایڈوانس کی رقم درست درج کریں۔');
+
+  // Check entitlement before uploading media; the database trigger remains the final authority.
+  const { data: limitData, error: limitError } = await supabase.rpc('get_listing_post_status');
+  if (limitError) return notice('اشتہار لگانے کا اسٹیٹس چیک نہیں ہو سکا: ' + limitError.message);
+  const limit = Array.isArray(limitData) ? limitData[0] : limitData;
+  if (!limit?.is_allowed) {
+    await loadPostLimitStatus();
+    return notice('مفت اشتہار کی حد پوری ہو چکی ہے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+  }
+
   const files = f.getAll('photos').filter(file => file instanceof File && file.size);
   if (files.length > 5) return notice('زیادہ سے زیادہ 5 تصاویر یا ویڈیوز اپ لوڈ کر سکتے ہیں۔');
+  const uploadedPaths = [];
   const photos = [];
-  for (const file of files) {
-    const isVideo = file.type.startsWith('video/');
-    if (!file.type.startsWith('image/') && !isVideo) return notice('صرف تصویر یا ویڈیو فائل اپ لوڈ کریں۔');
-    if (isVideo && file.size > 25 * 1024 * 1024) return notice('ہر ویڈیو 25MB سے کم ہونی چاہیے۔');
-    if (!isVideo && file.size > 5 * 1024 * 1024) return notice('ہر تصویر 5MB سے کم ہونی چاہیے۔');
-    const path = `${state.user.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-    const { error: uploadError } = await supabase.storage.from('listing-photos').upload(path, file);
-    if (uploadError) return notice('تصویر اپ لوڈ نہیں ہوئی: ' + uploadError.message);
-    photos.push(supabase.storage.from('listing-photos').getPublicUrl(path).data.publicUrl);
+  const submitButton = form.querySelector('button[type="submit"]');
+  if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'اشتہار شائع ہو رہا ہے…'; }
+  try {
+    for (const file of files) {
+      const isVideo = file.type.startsWith('video/');
+      const allowedImage = ['image/jpeg','image/png','image/webp'].includes(file.type);
+      const allowedVideo = ['video/mp4','video/webm','video/quicktime'].includes(file.type);
+      if (!allowedImage && !allowedVideo) throw new Error('صرف JPG, PNG, WEBP تصاویر یا MP4, WEBM, MOV ویڈیوز اپ لوڈ کریں۔');
+      if (isVideo && file.size > 25 * 1024 * 1024) throw new Error('ہر ویڈیو 25MB سے کم ہونی چاہیے۔');
+      if (!isVideo && file.size > 5 * 1024 * 1024) throw new Error('ہر تصویر 5MB سے کم ہونی چاہیے۔');
+      const ext = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || (isVideo ? 'mp4' : 'jpg');
+      const path = `${state.user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('listing-photos').upload(path, file, {
+        contentType: file.type, cacheControl: '3600', upsert: false
+      });
+      if (uploadError) throw new Error('تصویر اپ لوڈ نہیں ہوئی: ' + uploadError.message);
+      uploadedPaths.push(path);
+      photos.push(supabase.storage.from('listing-photos').getPublicUrl(path).data.publicUrl);
+    }
+
+    const coords = f.get('use_current_location') === 'on' ? (state.location || await getPosition()) : null;
+    const payload = {
+      owner_id: state.user.id, owner_phone: phone, type: f.get('type'),
+      area, rent, advance, size: String(f.get('size') || '').trim(),
+      description: String(f.get('description') || '').trim(), photo_urls: photos, status: 'active',
+      latitude: coords?.latitude ?? null, longitude: coords?.longitude ?? null
+    };
+    const { error } = await supabase.from('listings').insert(payload);
+    if (error) {
+      if (String(error.message || '').includes('FREE_LISTING_LIMIT')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+      if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED')) throw new Error('آپ کے ایجنٹ پیکج کی 40 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
+      throw new Error('اشتہار جمع نہیں ہوا: ' + error.message);
+    }
+    notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
+    form.reset();
+    tab('search');
+    await loadListings();
+  } catch (error) {
+    if (uploadedPaths.length) await supabase.storage.from('listing-photos').remove(uploadedPaths);
+    notice(error.message || 'اشتہار شائع نہیں ہو سکا۔ دوبارہ کوشش کریں۔');
+  } finally {
+    if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'اشتہار شائع کریں'; }
   }
-  const coords = f.get("use_current_location") === "on" ? (state.location || await getPosition()) : null;
-  const payload = {
-    owner_id: state.user.id, owner_phone: phone, type: f.get('type'),
-    area: String(f.get('area') || '').trim(), rent: Number(f.get('rent')),
-    advance: Number(f.get('advance') || 0), size: f.get('size'),
-    description: f.get('description'), photo_urls: photos, status: 'active',
-    latitude: coords?.latitude ?? null, longitude: coords?.longitude ?? null
-  };
-  const { error } = await supabase.from('listings').insert(payload);
-  if (error) {
-    if (String(error.message || '').includes('FREE_LISTING_LIMIT')) return notice('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
-    return notice('اشتہار جمع نہیں ہوا: ' + error.message);
-  }
-  notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
-  e.target.reset(); tab('search'); await loadListings();
 }
 async function matchWanted(e) {
   e.preventDefault();
