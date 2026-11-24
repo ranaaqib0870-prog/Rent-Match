@@ -77,7 +77,27 @@ const translations = {
   'اشتہار ہٹا دیا گیا۔':'The listing has been removed.','ایپ چل رہی ہے، لیکن Supabase کی سیٹنگ ابھی درکار ہے۔':'The app is running, but Supabase setup is still required.',
   'Supabase سیٹنگ مکمل ہونے کے بعد تلاش شروع ہوگی۔':'Search will begin once the Supabase setup is complete.',
   'ایپ شروع نہیں ہو سکی۔ براہِ کرم دوبارہ کوشش کریں۔':'The app could not start. Please try again.',
-  'تصاویر یا ویڈیوز':'Photos or Videos','میڈیا':'Media','ویڈیو':'Video','دن':'days','ماہ':'month'
+  'تصاویر یا ویڈیوز':'Photos or Videos','میڈیا':'Media','ویڈیو':'Video','دن':'days','ماہ':'month',
+
+  'پریمیم':'Premium','پریمیم پیکج منتخب کریں':'Choose a Premium package',
+  'آپ کا پریمیم اسٹیٹس':'Your Premium status','پریمیم فعال ہے تا':'Premium active until',
+  'ابھی پریمیم فعال نہیں':'Premium is not active yet','ادائیگی کا طریقہ':'Payment method',
+  'اکاؤنٹ ٹائٹل':'Account title','اکاؤنٹ نمبر':'Account number',
+  'رقم بھیجنے کے بعد ٹرانزیکشن آئی ڈی درج کریں۔':'After sending the payment, enter the transaction ID.',
+  'پیکج':'Package','7 دن — Rs 300':'7 days — Rs 300','15 دن — Rs 500':'15 days — Rs 500',
+  '30 دن — Rs 900':'30 days — Rs 900','ٹرانزیکشن آئی ڈی':'Transaction ID',
+  'ادائیگی کرنے والے کا نام':'Sender name','ادائیگی کی درخواست جمع کریں':'Submit payment for verification',
+  'درخواست کی ہسٹری':'Payment request history','ابھی کوئی ادائیگی درخواست نہیں۔':'No payment requests yet.',
+  'زیرِ تصدیق':'Pending verification','منظور':'Approved','مسترد':'Rejected',
+  'آپ کی ادائیگی کی درخواست موصول ہو گئی ہے۔ تصدیق کے بعد Premium فعال ہو جائے گا۔':'Your payment request has been received. Premium will activate after verification.',
+  'ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Please sign in before submitting a payment.',
+  'ایڈمن ادائیگیوں کی تصدیق':'Admin payment verification','کوئی زیرِ تصدیق ادائیگی نہیں۔':'No pending payments.',
+  'منظور کریں':'Approve','مسترد کریں':'Reject','ادائیگی کی درخواست منظور ہو گئی۔':'Payment request approved.',
+  'ادائیگی کی درخواست مسترد ہو گئی۔':'Payment request rejected.','ادائیگی کی تصدیق نہیں ہو سکی: ':'Could not review payment: ',
+  'پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ':'Could not load Premium status: ','صرف ایڈمن ادائیگی منظور کر سکتا ہے۔':'Only an administrator can approve payments.',
+  'ٹرانزیکشن آئی ڈی درج کریں۔':'Enter the transaction ID.','ادائیگی اکاؤنٹ':'Payment account',
+  'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.'
+
 };
 let currentLanguage = 'ur';
 const reverseTranslations = Object.fromEntries(Object.entries(translations).map(([ur, en]) => [en, ur]));
@@ -152,6 +172,7 @@ function shell() {
       <button data-tab="mine">میرے اشتہارات</button>
       <button data-tab="notifications">اطلاعات <span id="notificationCount" class="notification-count hidden">0</span></button>
       <button data-tab="account">اکاؤنٹ</button>
+      <button data-tab="premium">پریمیم</button>
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
   <main class="wrap">
@@ -220,7 +241,36 @@ function shell() {
       </div>
       <p id="accountStatus" class="muted">لاگ اِن کرنے کے لیے ایک آپشن منتخب کریں۔</p><button id="logout" class="secondary hidden">لاگ آؤٹ</button>
     </div></section>
-    <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminListings" class="cards"></div></div></section>
+
+    <section id="premium" class="tab hidden">
+      <div class="panel premium-panel">
+        <h2>پریمیم پیکج منتخب کریں</h2>
+        <p id="premiumStatus" class="notice">آپ کا پریمیم اسٹیٹس لوڈ ہو رہا ہے…</p>
+        <div class="payment-account">
+          <h3>ادائیگی اکاؤنٹ</h3>
+          <p><strong>اکاؤنٹ ٹائٹل:</strong> Rana Aqib</p>
+          <p><strong>EasyPaisa / JazzCash:</strong> <bdi>03326830870</bdi></p>
+          <p class="muted">رقم بھیجنے کے بعد ٹرانزیکشن آئی ڈی درج کریں۔ ادائیگی کی تصدیق ایڈمن کرے گا۔</p>
+        </div>
+        <form id="premiumPaymentForm" class="grid premium-form">
+          <label>پیکج<select name="plan_code" required>
+            <option value="premium_7_days">7 دن — Rs 300</option>
+            <option value="premium_15_days">15 دن — Rs 500</option>
+            <option value="premium_30_days">30 دن — Rs 900</option>
+          </select></label>
+          <label>ادائیگی کا طریقہ<select name="payment_method" required>
+            <option value="easypaisa">EasyPaisa</option>
+            <option value="jazzcash">JazzCash</option>
+          </select></label>
+          <label>ٹرانزیکشن آئی ڈی<input name="transaction_id" required minlength="4" maxlength="100" autocomplete="off"></label>
+          <label>ادائیگی کرنے والے کا نام<input name="payer_name" maxlength="100"></label>
+          <button class="primary" type="submit">ادائیگی کی درخواست جمع کریں</button>
+        </form>
+        <h3 class="payment-history-title">درخواست کی ہسٹری</h3>
+        <div id="premiumHistory"></div>
+      </div>
+    </section>
+    <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminPayments" class="admin-payments"></div><h3>تمام پراپرٹی اشتہارات</h3><div id="adminListings" class="cards"></div></div></section>
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
       </div>
 
@@ -248,6 +298,7 @@ function shell() {
   $('#googleLogin').addEventListener('click', () => loginWithProvider('google'));
   $('#facebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#logout').addEventListener('click', logout);
+  $('#premiumPaymentForm').addEventListener('submit', submitPremiumPayment);
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
 }
 function tab(name) {
@@ -256,6 +307,7 @@ function tab(name) {
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
   if (name === 'search') loadListings();
   if (name === 'admin') loadAdmin();
+  if (name === 'premium') loadPremium();
   if (name === 'mine') loadMyListings();
   if (name === 'notifications') loadNotifications();
 }
@@ -560,7 +612,84 @@ async function loadAdmin() {
   const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
   if (error) return notice(error.message);
   render(data || [], 'adminListings');
+  await loadPaymentRequests();
 }
+
+async function loadPremium() {
+  if (!supabase || !state.user) {
+    $('#premiumStatus').textContent = 'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔';
+    $('#premiumHistory').innerHTML = '';
+    return;
+  }
+  const [{ data: until, error: statusError }, { data: requests, error: historyError }] = await Promise.all([
+    supabase.rpc('get_my_premium_status'),
+    supabase.from('premium_payment_requests').select('id,plan_code,amount,payment_method,transaction_id,status,created_at,admin_note')
+      .eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(10)
+  ]);
+  if (statusError) return notice('پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ' + statusError.message);
+  $('#premiumStatus').textContent = until && new Date(until) > new Date()
+    ? 'پریمیم فعال ہے تا: ' + new Date(until).toLocaleString()
+    : 'ابھی پریمیم فعال نہیں۔';
+  if (historyError) return notice(historyError.message);
+  const statusLabel = { pending:'زیرِ تصدیق', approved:'منظور', rejected:'مسترد' };
+  $('#premiumHistory').innerHTML = requests?.length ? requests.map(r => `
+    <div class="payment-history-row">
+      <strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')}</strong>
+      <span>${esc(statusLabel[r.status] || r.status)}</span>
+      <small>TXN: ${esc(r.transaction_id)} · ${new Date(r.created_at).toLocaleString()}</small>
+      ${r.admin_note ? `<small>${esc(r.admin_note)}</small>` : ''}
+    </div>`).join('') : '<div class="empty">ابھی کوئی ادائیگی درخواست نہیں۔</div>';
+}
+async function submitPremiumPayment(e) {
+  e.preventDefault();
+  if (!supabase || !state.user) return notice('ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔');
+  const f = new FormData(e.target);
+  const plan = String(f.get('plan_code') || '');
+  const amounts = { premium_7_days:300, premium_15_days:500, premium_30_days:900 };
+  const transactionId = String(f.get('transaction_id') || '').trim();
+  if (!amounts[plan]) return;
+  if (transactionId.length < 4) return notice('ٹرانزیکشن آئی ڈی درج کریں۔');
+  const { error } = await supabase.from('premium_payment_requests').insert({
+    user_id: state.user.id, plan_code: plan, amount: amounts[plan],
+    payment_method: f.get('payment_method'), transaction_id: transactionId,
+    payer_name: String(f.get('payer_name') || '').trim()
+  });
+  if (error) return notice('ادائیگی جمع نہیں ہوئی: ' + error.message);
+  notice('آپ کی ادائیگی کی درخواست موصول ہو گئی ہے۔ تصدیق کے بعد Premium فعال ہو جائے گا۔');
+  e.target.reset();
+  await loadPremium();
+}
+async function loadPaymentRequests() {
+  if (!state.admin) return;
+  const el = $('#adminPayments');
+  if (!el) return;
+  const { data, error } = await supabase.from('premium_payment_requests').select('*')
+    .order('created_at', { ascending: false }).limit(100);
+  if (error) { el.textContent = error.message; return; }
+  const pending = (data || []).filter(r => r.status === 'pending');
+  el.innerHTML = '<h3>ایڈمن ادائیگیوں کی تصدیق</h3>' + (pending.length ? pending.map(r => `
+    <article class="payment-admin-row">
+      <div><strong>Rs ${Number(r.amount).toLocaleString('en-PK')} · ${esc(r.plan_code.replace('premium_','').replaceAll('_',' '))}</strong>
+      <p>${esc(r.payment_method === 'easypaisa' ? 'EasyPaisa' : 'JazzCash')} · TXN: <bdi>${esc(r.transaction_id)}</bdi></p>
+      <small>Sender: ${esc(r.payer_name || '—')} · User: ${esc(r.user_id)} · ${new Date(r.created_at).toLocaleString()}</small></div>
+      <div class="actions"><button class="primary" type="button" data-review-payment="${esc(r.id)}" data-approve="true">منظور کریں</button>
+      <button class="danger" type="button" data-review-payment="${esc(r.id)}" data-approve="false">مسترد کریں</button></div>
+    </article>`).join('') : '<div class="empty">کوئی زیرِ تصدیق ادائیگی نہیں۔</div>');
+  el.querySelectorAll('[data-review-payment]').forEach(btn => btn.addEventListener('click', async () => {
+    if (!state.admin) return notice('صرف ایڈمن ادائیگی منظور کر سکتا ہے۔');
+    const approve = btn.dataset.approve === 'true';
+    const note = approve ? '' : (prompt('مسترد کرنے کی وجہ (اختیاری):') || '');
+    if (!approve && !confirm('کیا آپ اس ادائیگی کو مسترد کرنا چاہتے ہیں؟')) return;
+    if (approve && !confirm('کیا آپ نے اپنے EasyPaisa/JazzCash اکاؤنٹ میں رقم وصول ہونے کی تصدیق کر لی ہے؟')) return;
+    const { error: reviewError } = await supabase.rpc('review_premium_payment', {
+      p_payment_id: btn.dataset.reviewPayment, p_approve: approve, p_note: note
+    });
+    if (reviewError) return notice('ادائیگی کی تصدیق نہیں ہو سکی: ' + reviewError.message);
+    notice(approve ? 'ادائیگی کی درخواست منظور ہو گئی۔' : 'ادائیگی کی درخواست مسترد ہو گئی۔');
+    await loadPaymentRequests();
+  }));
+}
+
 async function removeListing(id) {
   if (!state.admin) return notice('صرف ایڈمن اشتہار ہٹا سکتا ہے۔');
   if (!confirm('کیا آپ واقعی یہ اشتہار ہٹانا چاہتے ہیں؟')) return;
