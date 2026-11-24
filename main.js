@@ -370,6 +370,9 @@ function setAppAccess() {
   if (!allowed) {
     state.tab = 'search';
     updateNotificationBadge(0);
+    // Restore the default screen after logout or session expiry.
+    document.querySelectorAll('.tab').forEach(section => section.classList.toggle('hidden', section.id !== 'search'));
+    document.querySelectorAll('nav button').forEach(button => button.classList.toggle('active', button.dataset.tab === 'search'));
   } else if (!state.admin && state.tab === 'admin') {
     state.tab = 'search';
     document.querySelectorAll('.tab').forEach(section => section.classList.toggle('hidden', section.id !== 'search'));
@@ -377,15 +380,8 @@ function setAppAccess() {
   }
 }
 async function tab(name) {
-  // Re-check the persisted Supabase session before silently refusing navigation.
-  if (!state.user && supabase) {
-    const { data, error } = await supabase.auth.getUser();
-    if (!error && data?.user) {
-      state.user = data.user;
-      const { data: profile } = await supabase.from('profiles').select('role').eq('id', state.user.id).maybeSingle();
-      state.admin = profile?.role === 'admin';
-    }
-  }
+  // Session is restored once at startup. Avoid a remote Auth request on every
+  // tap: /auth/v1/user has been taking 20–90 seconds on this project.
   if (!state.user) {
     setAppAccess();
     notice('آپ کا لاگ اِن سیشن موجود نہیں۔ براہِ کرم دوبارہ لاگ اِن کریں۔');
@@ -592,16 +588,30 @@ async function loginWithProvider(provider) {
 }
 async function refreshUser() {
   if (!supabase) return;
-  const { data, error } = await supabase.auth.getUser();
-  if (error) { state.user = null; return; }
-  state.user = data.user;
+  // getSession() reads the locally persisted session without a network call.
+  // RLS continues to enforce all protected database operations server-side.
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    state.user = null;
+    state.admin = false;
+    setAppAccess();
+    return;
+  }
+  state.user = data.session?.user || null;
   state.admin = false;
+  // Reveal the signed-in app before the separate admin-role lookup completes.
+  setAppAccess();
   if (state.user) {
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', state.user.id).maybeSingle();
-    state.admin = profile?.role === 'admin';
     if ($('#accountStatus')) $('#accountStatus').textContent = 'لاگ اِن ہیں: ' + (state.user.email || '');
     $('#logout')?.classList.remove('hidden');
     subscribeOwnerNotifications();
+    try {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', state.user.id).maybeSingle();
+      state.admin = profile?.role === 'admin';
+    } catch (error) {
+      console.warn('Could not load account role:', error);
+    }
+    setAppAccess();
   } else {
     if (state.notificationChannel) { supabase.removeChannel(state.notificationChannel); state.notificationChannel = null; }
     updateNotificationBadge(0);
@@ -617,6 +627,7 @@ async function logout() {
   updateNotificationBadge(0);
   $('#accountStatus').textContent = 'آپ لاگ آؤٹ ہیں۔';
   $('#logout').classList.add('hidden');
+  setAppAccess();
 }
 async function loadPostLimitStatus() {
   const el = $('#postLimitStatus');
@@ -792,7 +803,6 @@ async function loadMyListings() {
     $('#myListings').innerHTML = '<div class="empty">اپنے اشتہارات دیکھنے کے لیے پہلے اکاؤنٹ میں لاگ اِن کریں۔</div>';
     return;
   }
-  await refreshUser();
   const { data, error } = await supabase.from('listings').select('*')
     .eq('owner_id', state.user.id).order('created_at', { ascending: false });
   if (error) return notice('آپ کے اشتہارات لوڈ نہیں ہوئے: ' + error.message);
@@ -811,7 +821,6 @@ async function archiveOwnListing(id) {
 }
 async function loadAdmin() {
   if (!supabase || !state.user) { $('#adminStatus').textContent = 'ایڈمن دیکھنے کے لیے لاگ اِن کریں۔'; return; }
-  await refreshUser();
   if (!state.admin) { $('#adminStatus').textContent = 'یہ حصہ صرف ایڈمن کے لیے ہے۔'; return; }
   $('#adminStatus').textContent = 'ایڈمن موڈ فعال ہے۔';
   const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
