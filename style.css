@@ -333,3 +333,5 @@ footer{padding:28px 16px;color:#718278}
 .auth-links{display:flex;justify-content:center;gap:10px;align-items:center;font-size:12px;margin-top:18px}
 .auth-links a{color:#126b4b;text-decoration:none}
 @media(max-width:480px){.auth-gate{padding:18px 14px}.auth-card{border-radius:19px}.auth-card h1{font-size:22px}}
+
+.load-more-button{display:block;width:min(100%,320px);margin:18px auto;padding:13px 18px;box-shadow:0 5px 16px rgba(18,107,75,.14)}.load-more-button:disabled{opacity:.65;cursor:wait}
