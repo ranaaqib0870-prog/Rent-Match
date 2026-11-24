@@ -109,6 +109,9 @@ const translations = {
 
 };
 let currentLanguage = 'ur';
+// Storage can be unavailable in some installed-browser contexts; never let it stop startup.
+function safeStorageGet(key) { try { return window.localStorage.getItem(key); } catch (error) { console.warn('Local storage read unavailable:', error); return null; } }
+function safeStorageSet(key, value) { try { window.localStorage.setItem(key, value); } catch (error) { console.warn('Local storage write unavailable:', error); } }
 const reverseTranslations = Object.fromEntries(Object.entries(translations).map(([ur, en]) => [en, ur]));
 function translateValue(value, lang = currentLanguage) {
   if (lang === 'en') return translations[value] || value;
@@ -136,7 +139,7 @@ function applyLanguage(lang) {
   document.documentElement.lang = currentLanguage;
   document.documentElement.dir = currentLanguage === 'en' ? 'ltr' : 'rtl';
   translateApp();
-  localStorage.setItem('rent-match-language', currentLanguage);
+  safeStorageSet('rent-match-language', currentLanguage);
 }
 let languageObserver;
 function watchDynamicTranslations() {
@@ -320,7 +323,7 @@ function shell() {
 
   const languageSelect = $('#languageSelect');
   if (languageSelect) {
-    languageSelect.value = localStorage.getItem('rent-match-language') || 'ur';
+    languageSelect.value = safeStorageGet('rent-match-language') || 'ur';
     languageSelect.addEventListener('change', e => applyLanguage(e.target.value));
     applyLanguage(languageSelect.value);
     watchDynamicTranslations();
@@ -1055,5 +1058,6 @@ async function start() {
 }
 start().catch(error => {
   console.error('RENT MATCH startup error:', error);
-  if ($('#app')) $('#app').innerHTML = '<div class="panel">ایپ شروع نہیں ہو سکی۔ براہِ کرم دوبارہ کوشش کریں۔</div>';
+  const app = $('#app');
+  if (app) app.innerHTML = `<div class="panel" role="alert"><h2>RENT MATCH شروع نہیں ہو سکی</h2><p>براہِ کرم دوبارہ کوشش کریں۔</p><p class="muted">Error: ${String(error?.message || error || 'Unknown startup error').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p><button class="primary" type="button" onclick="location.reload()">دوبارہ کھولیں / Reload</button></div>`;
 });
