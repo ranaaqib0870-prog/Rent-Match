@@ -300,7 +300,7 @@ function shell() {
         </section>
       </div>
     </section>
-    <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminPayments" class="admin-payments"></div><h3>تمام پراپرٹی اشتہارات</h3><div id="adminListings" class="cards"></div></div></section>
+    <section id="admin" class="tab hidden"><div class="panel"><h2>ایڈمن کنٹرول</h2><p id="adminStatus">ایڈمن اکاؤنٹ سے لاگ اِن کریں۔</p><div id="adminPayments" class="admin-payments"></div><section class="admin-reports"><h3>صارفین کی رپورٹس</h3><div id="adminReports"></div></section><h3>تمام پراپرٹی اشتہارات</h3><div id="adminListings" class="cards"></div></div></section>
     <div class="notice">پراپرٹی دیکھے اور مالک کی شناخت کی تصدیق کیے بغیر ایڈوانس نہ دیں۔</div>
       </div>
 
@@ -706,6 +706,34 @@ async function loadAdmin() {
   if (error) return notice(error.message);
   await render(data || [], 'adminListings');
   await loadPaymentRequests();
+  await loadAdminReports();
+}
+
+async function loadAdminReports() {
+  if (!state.admin || !supabase) return;
+  const el = $('#adminReports');
+  if (!el) return;
+  const { data: reports, error } = await supabase.from('listing_reports')
+    .select('id,listing_id,reporter_id,reason,created_at')
+    .order('created_at', { ascending: false }).limit(100);
+  if (error) { el.textContent = 'رپورٹس لوڈ نہیں ہو سکیں: ' + error.message; return; }
+  if (!reports?.length) { el.innerHTML = '<div class="empty">ابھی کوئی رپورٹ موصول نہیں ہوئی۔</div>'; return; }
+  const ids = [...new Set(reports.map(r => r.listing_id))];
+  const { data: listings } = await supabase.from('listings').select('id,type,area,rent,status').in('id', ids);
+  const byId = Object.fromEntries((listings || []).map(x => [x.id, x]));
+  el.innerHTML = reports.map(r => {
+    const listing = byId[r.listing_id];
+    return `<article class="admin-report-row">
+      <div><strong>${esc(listing ? listing.type + ' · ' + listing.area : 'پراپرٹی دستیاب نہیں')}</strong>
+      <p>${esc(r.reason)}</p><small>${new Date(r.created_at).toLocaleString()} · رپورٹ کنندہ: ${esc(r.reporter_id)}</small>
+      <small>اشتہار: ${esc(listing?.status || 'حذف شدہ')} ${listing ? '· Rs ' + Number(listing.rent).toLocaleString('en-PK') : ''}</small></div>
+      ${listing?.status === 'active' ? `<button class="danger" type="button" data-report-remove="${esc(r.listing_id)}">اشتہار ہٹائیں</button>` : '<span class="pill">کارروائی مکمل / اشتہار غیر فعال</span>'}
+    </article>`;
+  }).join('');
+  el.querySelectorAll('[data-report-remove]').forEach(btn => btn.addEventListener('click', async () => {
+    await removeListing(btn.dataset.reportRemove);
+    await loadAdminReports();
+  }));
 }
 
 async function loadActiveAgentProfiles(items) {
