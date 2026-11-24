@@ -101,44 +101,8 @@ ALTER TABLE private.agent_entitlements ADD CONSTRAINT agent_entitlements_listing
 UPDATE private.agent_entitlements SET listing_limit = 40 WHERE listing_limit <> 40;
 CREATE INDEX IF NOT EXISTS listings_owner_status_created_idx ON public.listings(owner_id, status, created_at DESC);
 
-CREATE OR REPLACE FUNCTION public.enforce_listing_post_limits()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = pg_catalog, public, private, auth
-AS $$
-DECLARE
-  v_uid uuid := auth.uid();
-  v_agent_limit integer;
-  v_agent_until timestamptz;
-  v_premium_until timestamptz;
-  v_active_count integer;
-  v_last_post timestamptz;
-BEGIN
-  IF v_uid IS NULL OR NEW.owner_id IS DISTINCT FROM v_uid THEN
-    RAISE EXCEPTION 'AUTH_REQUIRED_TO_POST_LISTING' USING ERRCODE = '42501';
-  END IF;
-  PERFORM 1 FROM public.profiles WHERE id = v_uid FOR UPDATE;
-  IF NOT FOUND THEN RAISE EXCEPTION 'PROFILE_REQUIRED_TO_POST_LISTING' USING ERRCODE = '42501'; END IF;
-  IF NEW.status <> 'active' THEN RAISE EXCEPTION 'INVALID_LISTING_STATUS' USING ERRCODE = '42501'; END IF;
-  SELECT active_until, listing_limit INTO v_agent_until, v_agent_limit FROM private.agent_entitlements WHERE user_id = v_uid;
-  IF v_agent_until IS NOT NULL AND v_agent_until > now() THEN
-    SELECT count(*) INTO v_active_count FROM public.listings WHERE owner_id = v_uid AND status = 'active';
-    IF v_active_count >= COALESCE(v_agent_limit, 40) THEN
-      RAISE EXCEPTION 'AGENT_LISTING_LIMIT_REACHED: Maximum 40 active listings.' USING ERRCODE = '42501';
-    END IF;
-    RETURN NEW;
-  END IF;
-  SELECT premium_until INTO v_premium_until FROM private.user_entitlements WHERE user_id = v_uid;
-  IF v_premium_until IS NOT NULL AND v_premium_until > now() THEN RETURN NEW; END IF;
-  SELECT max(created_at) INTO v_last_post FROM public.listings WHERE owner_id = v_uid;
-  IF v_last_post IS NOT NULL AND v_last_post > now() - interval '10 days' THEN
-    RAISE EXCEPTION 'FREE_LISTING_LIMIT: One free listing is allowed every 10 days.' USING ERRCODE = '42501';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-DROP TRIGGER IF EXISTS enforce_listing_post_limits ON public.listings;
-CREATE TRIGGER enforce_listing_post_limits BEFORE INSERT ON public.listings FOR EACH ROW EXECUTE FUNCTION public.enforce_listing_post_limits();
-
+-- The connected database already enforces the 10-day and 40-active-listing rules
+-- through private.enforce_listing_post_cooldown and private.enforce_listing_post_limit.
 CREATE OR REPLACE FUNCTION public.get_listing_post_status()
 RETURNS TABLE(is_allowed boolean, is_premium boolean, next_free_at timestamptz)
 LANGUAGE plpgsql STABLE SECURITY DEFINER
@@ -191,7 +155,6 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.enforce_listing_post_limits() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.review_premium_payment(uuid,boolean,text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.review_premium_payment(uuid,boolean,text) TO authenticated;
 REVOKE ALL ON FUNCTION public.get_active_agent_profiles(uuid[]) FROM PUBLIC, anon;
@@ -214,3 +177,9 @@ FOR INSERT TO authenticated WITH CHECK (
   user_id=(SELECT auth.uid()) AND status='pending' AND reviewed_at IS NULL AND admin_note=''
   AND screenshot_path IS NOT NULL AND screenshot_path LIKE (user_id::text || '/%')
 );
+
+-- Supporting indexes for frequently filtered foreign keys and admin queues.
+CREATE INDEX IF NOT EXISTS listing_comments_author_id_idx ON public.listing_comments(author_id);
+CREATE INDEX IF NOT EXISTS notifications_comment_id_idx ON public.notifications(comment_id);
+CREATE INDEX IF NOT EXISTS notifications_listing_id_idx ON public.notifications(listing_id);
+CREATE INDEX IF NOT EXISTS premium_payment_requests_user_id_idx ON public.premium_payment_requests(user_id);
