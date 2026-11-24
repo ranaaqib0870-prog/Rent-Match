@@ -1,0 +1,21 @@
+{
+  "name": "RENT MATCH",
+  "short_name": "RENT MATCH",
+  "description": "گھر اور دکان کرائے پر دینے اور تلاش کرنے کا آسان پلیٹ فارم",
+  "lang": "ur",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f7f4",
+  "theme_color": "#126b4b",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
