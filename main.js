@@ -38,7 +38,7 @@ const translations = {
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
   'عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 10 days. Premium plans allow additional listings.',
   'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 10 days, or choose a Premium plan for additional listings.',
-  'نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا.':'Note: These are introductory suggested prices. Payments and promoted listings will only activate after online payments are set up.',
+  'نوٹ: پریمیم اور ایجنٹ پیکج کی ادائیگی اسکرین شاٹ اور ایڈمن کی تصدیق کے بعد فعال ہوگی۔ خودکار آن لائن گیٹ وے اور نمایاں اشتہار ابھی فعال نہیں ہیں۔':'Premium and Agent packages activate after screenshot submission and admin verification. Automatic online payments and promoted listings are not active yet.',
   'دستیاب پراپرٹیز':'Available Properties','تفصیل دیکھنے کے لیے کارڈ کھولیں':'Open a card to view details',
   'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…':'Finding properties in your area…','5 مرلہ، 2 کمرے':'5 marla, 2 rooms',
   'اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔ اشتہار جمع ہوتے ہی شائع ہوگا۔':'Sign in with Google or Facebook to post a listing. Your listing will be published as soon as you submit it.',
@@ -191,11 +191,11 @@ function shell() {
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
         <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
-          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
+          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>20 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>پروفائل پر کاروباری رابطہ نمبر</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
           <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
         </div>
-        <p class="earning-note">نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا۔</p>
+        <p class="earning-note">نوٹ: پریمیم اور ایجنٹ پیکج کی ادائیگی اسکرین شاٹ اور ایڈمن کی تصدیق کے بعد فعال ہوگی۔ خودکار آن لائن گیٹ وے اور نمایاں اشتہار ابھی فعال نہیں ہیں۔</p>
       </section></div>
       <div id="propertySearchPanel" class="panel search-panel hidden">
       <p id="locationStatus" class="muted">آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…</p>
