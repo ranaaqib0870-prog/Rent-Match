@@ -33,6 +33,11 @@ const translations = {
   'عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی.':'Basic property listings will always be free. Optional paid features will provide extra visibility.',
   'نمایاں پراپرٹی اشتہار':'Featured Property Listing','اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔':'Your listing will appear above regular listings with a highlighted design.',
   'پراپرٹی ڈیلر پیکج':'Property Agent Packages','ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔':'Dedicated plans for property dealers and agents, with multiple listings and a business profile.','اسٹارٹر ایجنٹ — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','پروفیشنل ایجنٹ — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','بزنس ایجنٹ — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','40 فعال اشتہارات تک':'Up to 40 active listings','الگ ایجنٹ پروفائل اور Verified Agent بیج':'Separate agent profile and Verified Agent badge','تمام اشتہارات ایک جگہ مینیج کریں':'Manage all listings in one place','پروفائل پر کاروباری رابطہ نمبر':'Business contact details on your profile','ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔':'Select an agent plan and submit payment for admin verification.',
+  'اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔':'Sign in with Google or Facebook to post a listing.',
+  'آپ کا اگلا اشتہار لگانے کا حق دستیاب ہے۔':'Your next listing is available now.',
+  'آپ کا Premium فعال ہے؛ آپ اضافی اشتہارات لگا سکتے ہیں۔':'Your Premium plan is active; you can post additional listings.',
+  'آپ کا مفت اشتہار استعمال ہو چکا ہے۔ اگلا مفت اشتہار ':'Your free listing has been used. Your next free listing is available on ',
+  'اشتہار لگانے کا اسٹیٹس چیک کیا جا رہا ہے…':'Checking your listing eligibility…',
   'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
   'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
@@ -161,7 +166,15 @@ function watchDynamicTranslations() {
 
 
 
-function notice(message) { alert(translateValue(message)); }
+function notice(message) {
+  const toast = $('#appToast');
+  const text = translateValue(message);
+  if (!toast) { alert(text); return; }
+  toast.textContent = text;
+  toast.classList.add('show');
+  clearTimeout(notice.timer);
+  notice.timer = setTimeout(() => toast.classList.remove('show'), 3800);
+}
 function esc(value = '') {
   return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -180,7 +193,7 @@ function shell() {
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
   <main class="wrap">
-    <div class="page-layout">      <div class="page-content">      <div class="page-content">
+    <div class="page-layout"><div class="page-content">
     <section id="search" class="tab">
       <div class="search-intro">
         <span class="eyebrow">RENT MATCH</span>
@@ -292,7 +305,7 @@ function shell() {
       </div>
 
     </div>
-  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><footer>RENT MATCH ©</footer>`;
+  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><div id="appToast" class="app-toast" role="status" aria-live="polite"></div><footer>RENT MATCH ©</footer>`;
 
   const languageSelect = $('#languageSelect');
   if (languageSelect) {
