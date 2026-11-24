@@ -36,6 +36,8 @@ const translations = {
   'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
   'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
+  'عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 10 days. Premium plans allow additional listings.',
+  'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 10 days, or choose a Premium plan for additional listings.',
   'نوٹ: یہ قیمتیں ابتدائی تجاویز ہیں۔ آن لائن ادائیگی اور paid promotion فعال ہونے کے بعد ہی رقم وصول اور اشتہار نمایاں کیا جائے گا.':'Note: These are introductory suggested prices. Payments and promoted listings will only activate after online payments are set up.',
   'دستیاب پراپرٹیز':'Available Properties','تفصیل دیکھنے کے لیے کارڈ کھولیں':'Open a card to view details',
   'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…':'Finding properties in your area…','5 مرلہ، 2 کمرے':'5 marla, 2 rooms',
@@ -163,7 +165,7 @@ function shell() {
         <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
       </div>
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
-        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p></div>
+        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
           <article class="earning-card featured-plan"><span class="earning-badge">⭐ Featured Ad</span><h3>نمایاں پراپرٹی اشتہار</h3><p>اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul></article>
           <article class="earning-card"><span class="earning-badge">🏢 Agent Plan</span><h3>پراپرٹی ڈیلر پیکج</h3><p>ڈیلرز اور ایجنٹس کے لیے ماہانہ پیکج، زیادہ اشتہارات اور کاروباری پروفائل۔</p><strong>مجوزہ قیمت: Rs 2,000 / ماہ</strong></article>
@@ -439,7 +441,10 @@ async function publish(e) {
     latitude: coords?.latitude ?? null, longitude: coords?.longitude ?? null
   };
   const { error } = await supabase.from('listings').insert(payload);
-  if (error) return notice('اشتہار جمع نہیں ہوا: ' + error.message);
+  if (error) {
+    if (String(error.message || '').includes('FREE_LISTING_LIMIT')) return notice('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+    return notice('اشتہار جمع نہیں ہوا: ' + error.message);
+  }
   notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
   e.target.reset(); tab('search'); await loadListings();
 }
