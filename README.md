@@ -5,6 +5,8 @@ RENT MATCH is an Urdu-first, responsive rental marketplace for houses and shops,
 ## Current product features
 
 - Urdu and English interface with RTL/LTR switching.
+- Installable Android/mobile web app manifest and app icon.
+- Public Privacy Policy and Terms pages (drafts requiring contact details and legal review before launch).
 - Google and Facebook OAuth sign-in (provider credentials must be configured in Supabase).
 - Browse active house/shop listings, search by area, type, rent and advance, and optional nearby search.
 - Post a listing with up to five images/videos; image limit 5 MB each and video limit 25 MB each.
