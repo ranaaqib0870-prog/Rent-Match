@@ -95,7 +95,7 @@ const translations = {
   'منظور کریں':'Approve','مسترد کریں':'Reject','ادائیگی کی درخواست منظور ہو گئی۔':'Payment request approved.',
   'ادائیگی کی درخواست مسترد ہو گئی۔':'Payment request rejected.','ادائیگی کی تصدیق نہیں ہو سکی: ':'Could not review payment: ',
   'پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ':'Could not load Premium status: ','صرف ایڈمن ادائیگی منظور کر سکتا ہے۔':'Only an administrator can approve payments.',
-  'ٹرانزیکشن آئی ڈی درج کریں۔':'Enter the transaction ID.','ادائیگی اکاؤنٹ':'Payment account',
+  'ٹرانزیکشن آئی ڈی درج کریں۔':'Enter the transaction ID.','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 7-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
   'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.'
 
 };
@@ -188,7 +188,7 @@ function shell() {
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
         <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
-          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Featured Ad</span><h3>نمایاں پراپرٹی اشتہار</h3><p>اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul></article>
+          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card"><span class="earning-badge">🏢 Agent Plan</span><h3>پراپرٹی ڈیلر پیکج</h3><p>ڈیلرز اور ایجنٹس کے لیے ماہانہ پیکج، زیادہ اشتہارات اور کاروباری پروفائل۔</p><strong>مجوزہ قیمت: Rs 2,000 / ماہ</strong></article>
           <article class="earning-card"><span class="earning-badge">📢 Business Ads</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔</p><strong>ہفتہ وار یا ماہانہ فیس</strong></article>
         </div>
@@ -299,6 +299,7 @@ function shell() {
   $('#facebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#logout').addEventListener('click', logout);
   $('#premiumPaymentForm').addEventListener('submit', submitPremiumPayment);
+  $('#openPremiumFromCard').addEventListener('click', () => tab('premium'));
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
 }
 function tab(name) {
