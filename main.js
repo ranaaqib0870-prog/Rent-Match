@@ -180,7 +180,19 @@ function esc(value = '') {
 }
 function shell() {
   $('#app').innerHTML = `
-  <header><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div>
+  <section id="authGate" class="auth-gate hidden" dir="rtl">
+    <div class="auth-card">
+      <div class="auth-logo">🏠 RENT MATCH</div>
+      <span class="auth-kicker">WELCOME</span>
+      <h1>RENT MATCH میں خوش آمدید</h1>
+      <p>گھر یا دکان تلاش کرنے، اشتہار لگانے اور تمام سہولیات استعمال کرنے کے لیے پہلے لاگ اِن کریں یا نیا اکاؤنٹ بنائیں۔</p>
+      <button id="gateGoogleLogin" class="primary auth-action" type="button">Google / Gmail سے لاگ اِن یا سائن اپ کریں</button>
+      <button id="gateFacebookLogin" class="secondary auth-action" type="button">Facebook سے لاگ اِن یا سائن اپ کریں</button>
+      <p class="auth-footnote">نیا اکاؤنٹ بنانے کے لیے بھی یہی آپشن استعمال کریں۔</p>
+      <div class="auth-links"><a href="/privacy.html">پرائیویسی پالیسی</a><span>·</span><a href="/terms.html">استعمال کی شرائط</a></div>
+    </div>
+  </section>
+  <header id="appHeader"><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div>
     <p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
     <nav>
       <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
@@ -192,7 +204,7 @@ function shell() {
       <button data-tab="premium">پریمیم</button>
       <button data-tab="admin">ایڈمن</button>
     </nav></div></header>
-  <main class="wrap">
+  <main id="appMain" class="wrap">
     <div class="page-layout"><div class="page-content">
     <section id="search" class="tab">
       <div class="search-intro">
@@ -326,6 +338,8 @@ function shell() {
   $('#postForm').addEventListener('submit', publish);
   $('#wantedForm').addEventListener('submit', matchWanted);
   $('#googleLogin').addEventListener('click', () => loginWithProvider('google'));
+  $('#gateGoogleLogin').addEventListener('click', () => loginWithProvider('google'));
+  $('#gateFacebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#facebookLogin').addEventListener('click', () => loginWithProvider('facebook'));
   $('#logout').addEventListener('click', logout);
   $('#premiumPaymentForm').addEventListener('submit', submitPremiumPayment);
@@ -334,7 +348,18 @@ function shell() {
   $('#openAgentPackages').addEventListener('click', () => { tab('premium'); const s = $('#premiumPaymentForm select[name="plan_code"]'); if (s) s.value = 'agent_starter_7_days'; });
   $('#nearMe').addEventListener('click', async () => { await detectLocation(true); await loadListings(); });
 }
+function setAppAccess() {
+  const allowed = !!state.user;
+  $('#authGate')?.classList.toggle('hidden', allowed);
+  $('#appHeader')?.classList.toggle('hidden', !allowed);
+  $('#appMain')?.classList.toggle('hidden', !allowed);
+  if (!allowed) {
+    state.tab = 'search';
+    updateNotificationBadge(0);
+  }
+}
 function tab(name) {
+  if (!state.user) { setAppAccess(); return; }
   state.tab = name;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab').forEach(s => s.classList.toggle('hidden', s.id !== name));
@@ -905,6 +930,7 @@ async function start() {
     return;
   }
   await refreshUser();
+  setAppAccess();
   if ($('#locationStatus')) $('#locationStatus').textContent = 'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…';
   // Do not block the whole app while the browser asks for location permission.
   detectLocation().then(() => {
@@ -915,6 +941,7 @@ async function start() {
   supabase.auth.onAuthStateChange(() => {
     setTimeout(async () => {
       await refreshUser();
+      setAppAccess();
       if (state.tab === 'search') await loadListings();
       if (state.tab === 'mine') await loadMyListings();
       if (state.tab === 'post') await loadPostLimitStatus();
