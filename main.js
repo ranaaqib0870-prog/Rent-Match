@@ -192,14 +192,13 @@ function shell() {
       <div class="auth-links"><a href="/privacy.html">پرائیویسی پالیسی</a><span>·</span><a href="/terms.html">استعمال کی شرائط</a></div>
     </div>
   </section>
-  <header id="appHeader"><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div>
+  <header id="appHeader"><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><div class="header-actions"><button id="notificationBell" class="notification-bell" type="button" aria-label="Notifications" title="Notifications">🔔<span id="notificationCount" class="notification-count hidden">0</span></button><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div></div>
     <p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
     <nav>
       <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
       <button data-tab="post">اشتہار لگائیں</button>
       <button data-tab="wanted">ضرورت درج کریں</button>
       <button data-tab="mine">میرے اشتہارات</button>
-      <button data-tab="notifications">اطلاعات <span id="notificationCount" class="notification-count hidden">0</span></button>
       <button data-tab="account">اکاؤنٹ</button>
       <button data-tab="premium">پریمیم</button>
       <button data-tab="admin">ایڈمن</button>
@@ -327,6 +326,7 @@ function shell() {
     watchDynamicTranslations();
   }
   // Delegate navigation clicks so dynamically translated/mobile-rendered nav buttons always work.
+  $('#notificationBell')?.addEventListener('click', () => tab('notifications').catch(error => { console.error('RENT MATCH notifications error:', error); notice('اطلاعات ابھی لوڈ نہیں ہو سکیں۔'); }));
   document.querySelector('nav')?.addEventListener('click', e => {
     const button = e.target.closest('button[data-tab]');
     if (!button) return;
@@ -760,6 +760,7 @@ async function submitComment(event, listingId) {
 function updateNotificationBadge(count) {
   const badge = $('#notificationCount'); if (!badge) return;
   badge.textContent = String(count); badge.classList.toggle('hidden', !count);
+  $('#notificationBell')?.setAttribute('aria-label', count ? `Notifications (${count} unread)` : 'Notifications');
 }
 async function loadNotifications() {
   const target = $('#notificationsList'); if (!target) return;
