@@ -17,7 +17,26 @@
   <title>RENT MATCH — گھر اور دکان کرائے پر</title>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app"><div id="bootStatus" style="max-width:520px;margin:12vh auto;padding:24px;border-radius:16px;background:#fff;border:1px solid #ddd;font-family:Arial,sans-serif;text-align:center;color:#222"><h2 style="color:#126b4b">RENT MATCH</h2><p id="bootMessage">ایپ شروع ہو رہی ہے… براہِ کرم چند لمحے انتظار کریں۔</p><button onclick="location.reload()" style="padding:10px 18px;border:0;border-radius:8px;background:#126b4b;color:white">دوبارہ کھولیں</button></div></div>
+  <script>
+    (function () {
+      var timer = setTimeout(function () {
+        var box = document.getElementById('bootMessage');
+        if (box && document.getElementById('bootStatus')) {
+          box.textContent = 'ایپ کا JavaScript شروع نہیں ہو سکا۔ صفحہ دوبارہ کھولیں؛ اگر مسئلہ رہے تو اس پیغام کا اسکرین شاٹ بھیجیں۔';
+        }
+      }, 10000);
+      window.addEventListener('error', function (event) {
+        var box = document.getElementById('bootMessage');
+        if (box) box.textContent = 'JavaScript Error: ' + (event.message || 'Script load failed');
+      });
+      window.addEventListener('unhandledrejection', function (event) {
+        var box = document.getElementById('bootMessage');
+        if (box) box.textContent = 'Startup Error: ' + String(event.reason && event.reason.message || event.reason || 'Unknown error');
+      });
+      window.__rentMatchBootTimer = timer;
+    })();
+  </script>
   <script type="module" src="/main.js"></script>
 </body>
 </html>
