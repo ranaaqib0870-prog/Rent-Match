@@ -1026,6 +1026,8 @@ async function start() {
   // Paint the sign-in screen immediately. Authentication and geolocation must
   // never block the first usable screen on a slow mobile connection.
   setAppAccess();
+  // Let the HTML boot screen know that the app shell has mounted successfully.
+  window.__rentMatchBootReady?.();
   if (!supabase) {
     $('#accountStatus').textContent = 'ایپ چل رہی ہے، لیکن Supabase کی سیٹنگ ابھی درکار ہے۔';
     $('#locationStatus').textContent = 'Supabase سیٹنگ مکمل ہونے کے بعد تلاش شروع ہوگی۔';
