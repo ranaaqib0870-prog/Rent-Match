@@ -34,9 +34,10 @@
         var box = document.getElementById('bootMessage');
         if (box) box.textContent = 'Startup Error: ' + String(event.reason && event.reason.message || event.reason || 'Unknown error');
       });
+      window.__rentMatchBootReady = function () { clearTimeout(timer); };
       window.__rentMatchBootTimer = timer;
     })();
   </script>
-  <script type="module" src="/main.js"></script>
+  <script type="module" src="/main.js" onerror="(function(){var box=document.getElementById('bootMessage');if(box)box.textContent='JavaScript file load nahi hui. Internet connection check karke page reload karein.';})()"></script>
 </body>
 </html>
