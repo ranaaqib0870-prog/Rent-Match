@@ -98,7 +98,7 @@ ALTER TABLE private.agent_entitlements ADD CONSTRAINT agent_entitlements_listing
 UPDATE private.agent_entitlements SET listing_limit = 20 WHERE listing_limit <> 20;
 CREATE INDEX IF NOT EXISTS listings_owner_status_created_idx ON public.listings(owner_id, status, created_at DESC);
 
--- The connected database already enforces the 10-day and 20-active-listing rules
+-- The connected database enforces the 7-day free-post cooldown and 20-active-listing agent cap
 -- through private.enforce_listing_post_cooldown and private.enforce_listing_post_limit.
 CREATE OR REPLACE FUNCTION public.get_listing_post_status()
 RETURNS TABLE(is_allowed boolean, is_premium boolean, next_free_at timestamptz)
