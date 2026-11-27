@@ -32,7 +32,7 @@ const translations = {
   'اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں':'Promote Your Listing and Find a Tenant Faster',
   'عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی.':'Basic property listings will always be free. Optional paid features will provide extra visibility.',
   'نمایاں پراپرٹی اشتہار':'Featured Property Listing','اشتہار عام لسٹنگ سے اوپر نمایاں ڈیزائن کے ساتھ دکھایا جائے گا۔':'Your listing will appear above regular listings with a highlighted design.',
-  'پراپرٹی ڈیلر پیکج':'Property Agent Packages','ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔':'Dedicated plans for property dealers and agents, with multiple listings and a business profile.','اسٹارٹر ایجنٹ — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','پروفیشنل ایجنٹ — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','بزنس ایجنٹ — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','40 فعال اشتہارات تک':'Up to 40 active listings','الگ ایجنٹ پروفائل اور Verified Agent بیج':'Separate agent profile and Verified Agent badge','تمام اشتہارات ایک جگہ مینیج کریں':'Manage all listings in one place','پروفائل پر کاروباری رابطہ نمبر':'Business contact details on your profile','ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔':'Select an agent plan and submit payment for admin verification.',
+  'پراپرٹی ڈیلر پیکج':'Property Agent Packages','ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔':'Dedicated plans for property dealers and agents, with multiple listings and a business profile.','اسٹارٹر ایجنٹ — 7 دن — Rs 500':'Starter Agent — 7 days — Rs 500','پروفیشنل ایجنٹ — 15 دن — Rs 900':'Professional Agent — 15 days — Rs 900','بزنس ایجنٹ — 30 دن — Rs 1,500':'Business Agent — 30 days — Rs 1,500','20 فعال اشتہارات تک':'Up to 20 active listings','الگ ایجنٹ پروفائل اور Verified Agent بیج':'Separate agent profile and Verified Agent badge','تمام اشتہارات ایک جگہ مینیج کریں':'Manage all listings in one place','پروفائل پر کاروباری رابطہ نمبر':'Business contact details on your profile','ایجنٹ پیکجز کی ادائیگی جلد فعال ہوگی۔':'Select an agent plan and submit payment for admin verification.',
   'اشتہار لگانے کے لیے پہلے Google یا Facebook سے لاگ اِن کریں۔':'Sign in with Google or Facebook to post a listing.',
   'آپ کا اگلا اشتہار لگانے کا حق دستیاب ہے۔':'Your next listing is available now.',
   'آپ کا Premium فعال ہے؛ آپ اضافی اشتہارات لگا سکتے ہیں۔':'Your Premium plan is active; you can post additional listings.',
@@ -701,7 +701,7 @@ async function publish(e) {
     if (error) {
       if (String(error.message || '').includes('FREE_LISTING_LIMIT')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
       if (String(error.message || '').includes('FREE_LISTING_LIMIT_7_DAYS')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
-      if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED') || String(error.message || '').includes('AGENT_LISTING_LIMIT_40')) throw new Error('آپ کے ایجنٹ پیکج کی 40 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
+      if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED') || String(error.message || '').includes('AGENT_LISTING_LIMIT_40')) throw new Error('آپ کے ایجنٹ پیکج کی 20 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
       throw new Error('اشتہار جمع نہیں ہوا: ' + error.message);
     }
     notice('آپ کا اشتہار فوراً شائع ہو گیا ہے۔');
