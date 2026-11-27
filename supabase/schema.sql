@@ -94,11 +94,11 @@ CREATE POLICY "owners archive own active listings"
 
 -- Launch hardening: posting quotas and manual-payment protections.
 ALTER TABLE private.agent_entitlements DROP CONSTRAINT IF EXISTS agent_entitlements_listing_limit_check;
-ALTER TABLE private.agent_entitlements ADD CONSTRAINT agent_entitlements_listing_limit_check CHECK (listing_limit >= 1 AND listing_limit <= 40);
-UPDATE private.agent_entitlements SET listing_limit = 40 WHERE listing_limit <> 40;
+ALTER TABLE private.agent_entitlements ADD CONSTRAINT agent_entitlements_listing_limit_check CHECK (listing_limit >= 1 AND listing_limit <= 20);
+UPDATE private.agent_entitlements SET listing_limit = 20 WHERE listing_limit <> 20;
 CREATE INDEX IF NOT EXISTS listings_owner_status_created_idx ON public.listings(owner_id, status, created_at DESC);
 
--- The connected database already enforces the 10-day and 40-active-listing rules
+-- The connected database already enforces the 10-day and 20-active-listing rules
 -- through private.enforce_listing_post_cooldown and private.enforce_listing_post_limit.
 CREATE OR REPLACE FUNCTION public.get_listing_post_status()
 RETURNS TABLE(is_allowed boolean, is_premium boolean, next_free_at timestamptz)
@@ -136,9 +136,9 @@ BEGIN
   IF p_approve THEN
     IF v_is_agent THEN
       INSERT INTO private.agent_entitlements(user_id,package_code,active_until,listing_limit,updated_at)
-      VALUES(v_request.user_id,v_request.plan_code,now()+make_interval(days=>v_days),40,now())
+      VALUES(v_request.user_id,v_request.plan_code,now()+make_interval(days=>v_days),20,now())
       ON CONFLICT(user_id) DO UPDATE SET package_code=EXCLUDED.package_code,
-        active_until=greatest(private.agent_entitlements.active_until,now())+make_interval(days=>v_days),listing_limit=40,updated_at=now();
+        active_until=greatest(private.agent_entitlements.active_until,now())+make_interval(days=>v_days),listing_limit=20,updated_at=now();
     ELSE
       INSERT INTO private.user_entitlements(user_id,premium_until,updated_at)
       VALUES(v_request.user_id,now()+make_interval(days=>v_days),now())
