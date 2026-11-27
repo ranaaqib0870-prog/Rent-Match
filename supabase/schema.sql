@@ -113,8 +113,8 @@ BEGIN
   SELECT e.premium_until INTO v_premium_until FROM private.user_entitlements e WHERE e.user_id = v_uid;
   IF v_premium_until IS NOT NULL AND v_premium_until > now() THEN RETURN QUERY SELECT true, true, NULL::timestamptz; RETURN; END IF;
   SELECT max(l.created_at) INTO v_latest FROM public.listings l WHERE l.owner_id = v_uid;
-  RETURN QUERY SELECT (v_latest IS NULL OR v_latest <= now() - interval '10 days'), false,
-    CASE WHEN v_latest IS NULL THEN NULL ELSE v_latest + interval '10 days' END;
+  RETURN QUERY SELECT (v_latest IS NULL OR v_latest <= now() - interval '7 days'), false,
+    CASE WHEN v_latest IS NULL THEN NULL ELSE v_latest + interval '7 days' END;
 END;
 $$;
 
