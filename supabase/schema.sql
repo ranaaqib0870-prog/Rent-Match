@@ -182,36 +182,54 @@ $$;
 CREATE OR REPLACE FUNCTION public.review_premium_payment(p_payment_id uuid, p_approve boolean, p_note text DEFAULT NULL)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = pg_catalog, public, private, auth
-AS $$
-DECLARE v_request public.premium_payment_requests%rowtype; v_days integer; v_is_agent boolean;
+AS $
+DECLARE
+  v_request public.premium_payment_requests%rowtype;
+  v_days integer;
+  v_expected_amount integer;
+  v_is_agent boolean;
 BEGIN
   IF auth.uid() IS NULL THEN RAISE EXCEPTION 'AUTH_REQUIRED'; END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role = 'admin') THEN RAISE EXCEPTION 'ADMIN_ONLY'; END IF;
-  SELECT * INTO v_request FROM public.premium_payment_requests WHERE id = p_payment_id FOR UPDATE;
+  IF NOT EXISTS (SELECT 1 FROM public.profiles p WHERE p.id=auth.uid() AND p.role='admin') THEN
+    RAISE EXCEPTION 'ADMIN_ONLY';
+  END IF;
+  SELECT * INTO v_request FROM public.premium_payment_requests WHERE id=p_payment_id FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'PAYMENT_REQUEST_NOT_FOUND'; END IF;
   IF v_request.status <> 'pending' THEN RAISE EXCEPTION 'PAYMENT_REQUEST_ALREADY_REVIEWED'; END IF;
+
   v_is_agent := v_request.plan_code LIKE 'agent_%';
-  v_days := CASE v_request.plan_code WHEN 'premium_7_days' THEN 7 WHEN 'premium_15_days' THEN 15 WHEN 'premium_30_days' THEN 30
+  v_days := CASE v_request.plan_code
+    WHEN 'premium_7_days' THEN 7 WHEN 'premium_15_days' THEN 15 WHEN 'premium_30_days' THEN 30
     WHEN 'agent_starter_7_days' THEN 7 WHEN 'agent_professional_15_days' THEN 15 WHEN 'agent_business_30_days' THEN 30 END;
-  IF v_days IS NULL THEN RAISE EXCEPTION 'INVALID_PACKAGE'; END IF;
+  v_expected_amount := CASE v_request.plan_code
+    WHEN 'premium_7_days' THEN 300 WHEN 'premium_15_days' THEN 500 WHEN 'premium_30_days' THEN 900
+    WHEN 'agent_starter_7_days' THEN 500 WHEN 'agent_professional_15_days' THEN 900 WHEN 'agent_business_30_days' THEN 1500 END;
+  IF v_days IS NULL OR v_expected_amount IS NULL THEN RAISE EXCEPTION 'INVALID_PACKAGE'; END IF;
+  IF v_request.amount <> v_expected_amount THEN RAISE EXCEPTION 'PAYMENT_AMOUNT_MISMATCH'; END IF;
+
   IF p_approve THEN
     IF v_is_agent THEN
       INSERT INTO private.agent_entitlements(user_id,package_code,active_until,listing_limit,updated_at)
       VALUES(v_request.user_id,v_request.plan_code,now()+make_interval(days=>v_days),20,now())
       ON CONFLICT(user_id) DO UPDATE SET package_code=EXCLUDED.package_code,
-        active_until=greatest(private.agent_entitlements.active_until,now())+make_interval(days=>v_days),listing_limit=20,updated_at=now();
+        active_until=greatest(private.agent_entitlements.active_until,now())+make_interval(days=>v_days),
+        listing_limit=20,updated_at=now();
     ELSE
       INSERT INTO private.user_entitlements(user_id,premium_until,updated_at)
       VALUES(v_request.user_id,now()+make_interval(days=>v_days),now())
-      ON CONFLICT(user_id) DO UPDATE SET premium_until=greatest(coalesce(private.user_entitlements.premium_until,now()),now())+make_interval(days=>v_days),updated_at=now();
+      ON CONFLICT(user_id) DO UPDATE SET
+        premium_until=greatest(coalesce(private.user_entitlements.premium_until,now()),now())+make_interval(days=>v_days),
+        updated_at=now();
     END IF;
   END IF;
-  UPDATE public.premium_payment_requests SET status=CASE WHEN p_approve THEN 'approved' ELSE 'rejected' END,
-    admin_note=left(coalesce(p_note,''),500),reviewed_at=now() WHERE id=p_payment_id;
+  UPDATE public.premium_payment_requests
+  SET status=CASE WHEN p_approve THEN 'approved' ELSE 'rejected' END,
+      admin_note=left(coalesce(p_note,''),500),reviewed_at=now()
+  WHERE id=p_payment_id;
   RETURN jsonb_build_object('success',true,'status',CASE WHEN p_approve THEN 'approved' ELSE 'rejected' END,
     'user_id',v_request.user_id,'package_type',CASE WHEN v_is_agent THEN 'agent' ELSE 'premium' END);
 END;
-$$;
+$;
 
 REVOKE ALL ON FUNCTION public.review_premium_payment(uuid,boolean,text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.review_premium_payment(uuid,boolean,text) TO authenticated;
