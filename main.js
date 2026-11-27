@@ -728,7 +728,8 @@ async function matchWanted(e) {
   const area = String(f.get('area') || '').trim();
   const type = String(f.get('type') || '');
   const rent = Number(f.get('rent'));
-  const advance = Number(f.get('advance') || 0);
+  const advanceInput = String(f.get('advance') || '').trim();
+  const advance = advanceInput ? Number(advanceInput) : 999999999;
   const notes = String(f.get('notes') || '').trim();
   if (area.length < 2 || !['گھر','دکان'].includes(type) || !Number.isFinite(rent) || rent <= 0 || !Number.isFinite(advance) || advance < 0) {
     return notice('براہِ کرم شہر، پراپرٹی کی قسم اور درست بجٹ درج کریں۔');
@@ -760,7 +761,7 @@ async function loadMyRequirements() {
   if (!data?.length) { el.innerHTML = '<div class="empty">ابھی کوئی ضرورت محفوظ نہیں۔</div>'; return; }
   el.innerHTML = data.map(r => `<article class="requirement-row">
     <div><strong>${esc(r.type)} · ${esc(r.area)}</strong>
-    <p>زیادہ سے زیادہ کرایہ: Rs ${Number(r.max_rent).toLocaleString('en-PK')} · ایڈوانس: Rs ${Number(r.max_advance).toLocaleString('en-PK')}</p>
+    <p>زیادہ سے زیادہ کرایہ: Rs ${Number(r.max_rent).toLocaleString('en-PK')} · ایڈوانس: ${Number(r.max_advance) >= 999999999 ? 'کوئی حد نہیں' : 'Rs ' + Number(r.max_advance).toLocaleString('en-PK')}</p>
     ${r.notes ? '<small>' + esc(r.notes) + '</small>' : ''}
     <small>${new Date(r.created_at).toLocaleDateString('ur-PK')} · ${r.status === 'active' ? 'فعال' : 'بند'}</small></div>
     <button class="danger" type="button" data-delete-requirement="${esc(r.id)}">حذف کریں</button>
