@@ -10,9 +10,9 @@ RENT MATCH is an Urdu-first, responsive rental marketplace for houses and shops,
 - Google and Facebook OAuth sign-in (provider credentials must be configured in Supabase).
 - Browse active house/shop listings, search by area, type, rent and advance, and optional nearby search.
 - Post a listing with up to five images/videos; image limit 5 MB each and video limit 25 MB each.
-- One free listing per account every 10 days.
-- Premium plans: 7 days Rs 300, 15 days Rs 500, 30 days Rs 900. Active Premium removes the 10-day posting interval.
-- Property Agent plans: Starter 7 days Rs 500, Professional 15 days Rs 900, Business 30 days Rs 1,500. Active Agent entitlement allows up to 40 active listings.
+- One free listing per account every 7 days.
+- Premium plans: 7 days Rs 300, 15 days Rs 500, 30 days Rs 900. Active Premium removes the 7-day posting interval.
+- Property Agent plans: Starter 7 days Rs 500, Professional 15 days Rs 900, Business 30 days Rs 1,500. Active Agent entitlement allows up to 20 active listings.
 - Manual EasyPaisa/JazzCash payment proof submission with private screenshot storage and administrator review.
 - Verified Agent profiles, listing comments, owner notifications, reports, call/WhatsApp contact, and owner listing removal.
 - Admin listing moderation and payment approval.
@@ -65,7 +65,7 @@ Vercel is connected to the GitHub repository and deploys the `main` branch.
 ## Safety and launch checklist
 
 - Test Google and Facebook OAuth using real accounts after provider setup.
-- Test first listing, second listing inside 10 days, listing after 10 days, Premium approval, Agent approval, and the 40-active-listing cap.
+- Test first listing, second listing inside 7 days, listing after 7 days, Premium approval, Agent approval, and the 20-active-listing cap.
 - Test image/video upload, removal, comments, reports, notifications, owner delete, and admin moderation.
 - Add and publish a reviewed Privacy Policy and Terms of Use before broad public promotion.
 - Users should view the property and verify ownership before paying any advance. RENT MATCH does not hold rental deposits or guarantee landlords, tenants, or property condition.
