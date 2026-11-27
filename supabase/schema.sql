@@ -196,3 +196,32 @@ $$;
 COMMENT ON FUNCTION public.get_active_agent_profiles(uuid[]) IS
 'Publicly exposes limited business-card fields for currently active verified agents; accepts at most 100 user IDs.';
 GRANT EXECUTE ON FUNCTION public.get_active_agent_profiles(uuid[]) TO anon, authenticated;
+
+
+-- Private storage for EasyPaisa/JazzCash payment proof screenshots.
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('premium-payment-screenshots', 'premium-payment-screenshots', false, 5242880,
+  ARRAY['image/jpeg','image/png','image/webp'])
+ON CONFLICT (id) DO UPDATE SET public = false, file_size_limit = 5242880,
+  allowed_mime_types = ARRAY['image/jpeg','image/png','image/webp'];
+
+DROP POLICY IF EXISTS "Users upload own premium payment screenshots" ON storage.objects;
+CREATE POLICY "Users upload own premium payment screenshots"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'premium-payment-screenshots'
+  AND (storage.foldername(name))[1] = (SELECT auth.uid())::text);
+
+DROP POLICY IF EXISTS "Users and admins view premium payment screenshots" ON storage.objects;
+CREATE POLICY "Users and admins view premium payment screenshots"
+ON storage.objects FOR SELECT TO authenticated
+USING (bucket_id = 'premium-payment-screenshots' AND (
+  (storage.foldername(name))[1] = (SELECT auth.uid())::text
+  OR EXISTS (SELECT 1 FROM public.profiles p
+    WHERE p.id = (SELECT auth.uid()) AND p.role = 'admin')
+));
+
+DROP POLICY IF EXISTS "Users delete own premium payment screenshots" ON storage.objects;
+CREATE POLICY "Users delete own premium payment screenshots"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'premium-payment-screenshots'
+  AND (storage.foldername(name))[1] = (SELECT auth.uid())::text);
