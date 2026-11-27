@@ -98,8 +98,69 @@ ALTER TABLE private.agent_entitlements ADD CONSTRAINT agent_entitlements_listing
 UPDATE private.agent_entitlements SET listing_limit = 20 WHERE listing_limit <> 20;
 CREATE INDEX IF NOT EXISTS listings_owner_status_created_idx ON public.listings(owner_id, status, created_at DESC);
 
--- The connected database enforces the 7-day free-post cooldown and 20-active-listing agent cap
--- through private.enforce_listing_post_cooldown and private.enforce_listing_post_limit.
+-- Keep both installed BEFORE INSERT triggers aligned to the same launch limits.
+CREATE OR REPLACE FUNCTION private.enforce_listing_post_cooldown()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, private
+AS $
+DECLARE v_user_id uuid; v_active_count integer;
+BEGIN
+  v_user_id := auth.uid();
+  IF v_user_id IS NULL OR NEW.owner_id IS DISTINCT FROM v_user_id THEN
+    RAISE EXCEPTION 'AUTH_REQUIRED_TO_POST_LISTING' USING ERRCODE = '42501';
+  END IF;
+  PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(v_user_id::text, 0));
+  IF EXISTS (SELECT 1 FROM private.agent_entitlements e WHERE e.user_id=v_user_id AND e.active_until>pg_catalog.now()) THEN
+    SELECT count(*) INTO v_active_count FROM public.listings l WHERE l.owner_id=v_user_id AND l.status='active';
+    IF v_active_count >= 20 THEN RAISE EXCEPTION 'AGENT_LISTING_LIMIT_REACHED' USING ERRCODE='P0001'; END IF;
+    NEW.created_at := pg_catalog.clock_timestamp(); RETURN NEW;
+  END IF;
+  IF EXISTS (SELECT 1 FROM private.user_entitlements e WHERE e.user_id=v_user_id AND e.premium_until>pg_catalog.now()) THEN
+    NEW.created_at := pg_catalog.clock_timestamp(); RETURN NEW;
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.listings l WHERE l.owner_id=v_user_id AND l.created_at>pg_catalog.now()-interval '7 days') THEN
+    RAISE EXCEPTION 'FREE_LISTING_LIMIT_7_DAYS' USING ERRCODE='P0001',
+      HINT='A free account can publish one listing every 7 days. Premium access allows additional listings.';
+  END IF;
+  NEW.created_at := pg_catalog.clock_timestamp(); RETURN NEW;
+END;
+$;
+
+CREATE OR REPLACE FUNCTION private.enforce_listing_post_limit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $
+DECLARE current_user_id uuid; has_premium boolean:=false; has_agent boolean:=false;
+  active_count integer:=0; recent_listing boolean:=false;
+BEGIN
+  current_user_id:=auth.uid();
+  IF current_user_id IS NULL OR NEW.owner_id IS DISTINCT FROM current_user_id THEN
+    RAISE EXCEPTION 'AUTH_REQUIRED_TO_POST_LISTING' USING ERRCODE='42501';
+  END IF;
+  PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(current_user_id::text,0));
+  NEW.created_at:=pg_catalog.clock_timestamp();
+  SELECT EXISTS(SELECT 1 FROM private.agent_entitlements e WHERE e.user_id=current_user_id AND e.active_until>pg_catalog.now()) INTO has_agent;
+  IF has_agent THEN
+    SELECT count(*) INTO active_count FROM public.listings l WHERE l.owner_id=current_user_id AND l.status='active';
+    IF active_count>=20 THEN RAISE EXCEPTION 'AGENT_LISTING_LIMIT_REACHED' USING ERRCODE='P0001'; END IF;
+    RETURN NEW;
+  END IF;
+  SELECT EXISTS(SELECT 1 FROM private.user_entitlements e WHERE e.user_id=current_user_id AND e.premium_until>pg_catalog.now()) INTO has_premium;
+  IF has_premium THEN RETURN NEW; END IF;
+  SELECT EXISTS(SELECT 1 FROM public.listings l WHERE l.owner_id=current_user_id AND l.created_at>pg_catalog.now()-interval '7 days') INTO recent_listing;
+  IF recent_listing THEN
+    RAISE EXCEPTION 'FREE_LISTING_LIMIT_7_DAYS' USING ERRCODE='P0001',
+      HINT='A free account can publish one listing every 7 days. Premium access allows additional listings.';
+  END IF;
+  RETURN NEW;
+END;
+$;
+
+
 CREATE OR REPLACE FUNCTION public.get_listing_post_status()
 RETURNS TABLE(is_allowed boolean, is_premium boolean, next_free_at timestamptz)
 LANGUAGE plpgsql STABLE SECURITY DEFINER
