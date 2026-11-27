@@ -41,8 +41,8 @@ const translations = {
   'مجوزہ قیمت: Rs 2,000 / ماہ':'Suggested price: Rs 2,000 / month','کاروباری بینر اشتہارات':'Business Banner Ads',
   'بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے بینر اشتہارات۔':'Banner ads for builders, furniture stores, moving services, and local businesses.',
   'ہفتہ وار یا ماہانہ فیس':'Weekly or monthly fee',
-  'عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 10 days. Premium plans allow additional listings.',
-  'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 10 days, or choose a Premium plan for additional listings.',
+  'عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔':'A regular user can post one free listing every 7 days. Premium plans allow additional listings.',
+  'مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔':'You have used your free listing. You can post another free listing after 7 days, or choose a Premium plan for additional listings.',
   'نوٹ: پریمیم اور ایجنٹ پیکج کی ادائیگی اسکرین شاٹ اور ایڈمن کی تصدیق کے بعد فعال ہوگی۔ خودکار آن لائن گیٹ وے اور نمایاں اشتہار ابھی فعال نہیں ہیں۔':'Premium and Agent packages activate after screenshot submission and admin verification. Automatic online payments and promoted listings are not active yet.',
   'دستیاب پراپرٹیز':'Available Properties','تفصیل دیکھنے کے لیے کارڈ کھولیں':'Open a card to view details',
   'آپ کے علاقے کی پراپرٹیز تلاش کی جا رہی ہیں…':'Finding properties in your area…','5 مرلہ، 2 کمرے':'5 marla, 2 rooms',
@@ -100,7 +100,7 @@ const translations = {
   'منظور کریں':'Approve','مسترد کریں':'Reject','ادائیگی کی درخواست منظور ہو گئی۔':'Payment request approved.',
   'ادائیگی کی درخواست مسترد ہو گئی۔':'Payment request rejected.','ادائیگی کی تصدیق نہیں ہو سکی: ':'Could not review payment: ',
   'پریمیم اسٹیٹس لوڈ نہیں ہو سکا: ':'Could not load Premium status: ','صرف ایڈمن ادائیگی منظور کر سکتا ہے۔':'Only an administrator can approve payments.',
-  'ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'Upload the payment screenshot.','اسکرین شاٹ دیکھیں':'View screenshot','اسکرین شاٹ دستیاب نہیں':'Screenshot unavailable','ادائیگی کا اسکرین شاٹ':'Payment screenshot','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 10-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
+  'ادائیگی کا اسکرین شاٹ اپلوڈ کریں۔':'Upload the payment screenshot.','اسکرین شاٹ دیکھیں':'View screenshot','اسکرین شاٹ دستیاب نہیں':'Screenshot unavailable','ادائیگی کا اسکرین شاٹ':'Payment screenshot','ادائیگی اکاؤنٹ':'Payment account','پریمیم پیکج':'Premium package','مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔':'Post additional listings during your Premium period without the 7-day free-post limit.','پریمیم حاصل کریں':'Get Premium',
   'پریمیم دیکھنے اور ادائیگی جمع کرنے کے لیے پہلے لاگ اِن کریں۔':'Sign in to view Premium and submit a payment.',
   'ایجنٹ بزنس پروفائل':'Agent Business Profile','ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔':'Complete your business profile after your Agent package is activated.',
   'کاروبار / ایجنسی کا نام':'Business / Agency Name','رابطہ موبائل نمبر':'Contact Mobile Number','مختصر تعارف':'Short Description','پروفائل محفوظ کریں':'Save Profile',
@@ -216,9 +216,9 @@ function shell() {
         <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
       </div>
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
-        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
+        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 7 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
-          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
+          <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 7 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>40 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>پروفائل پر کاروباری رابطہ نمبر</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
           <article class="earning-card"><span class="earning-badge">📢 جلد دستیاب</span><h3>کاروباری بینر اشتہارات</h3><p>بلڈرز، فرنیچر شاپس، شفٹنگ سروسز اور مقامی کاروبار کے لیے اشتہاری جگہ۔</p><strong>کاروباری اشتہارات کا نظام جلد دستیاب ہوگا۔</strong></article>
         </div>
@@ -640,7 +640,7 @@ async function loadPostLimitStatus() {
     el.textContent = status.is_premium ? 'آپ کا Premium فعال ہے؛ آپ اضافی اشتہارات لگا سکتے ہیں۔' : 'آپ کا اگلا اشتہار لگانے کا حق دستیاب ہے۔';
   } else {
     const date = status?.next_free_at ? new Date(status.next_free_at).toLocaleDateString() : '';
-    el.textContent = 'آپ کا مفت اشتہار استعمال ہو چکا ہے۔ اگلا مفت اشتہار ' + (date || '10 دن بعد') + ' لگا سکیں گے۔ اضافی اشتہارات کے لیے Premium پیکج دیکھیں۔';
+    el.textContent = 'آپ کا مفت اشتہار استعمال ہو چکا ہے۔ اگلا مفت اشتہار ' + (date || '7 دن بعد') + ' لگا سکیں گے۔ اضافی اشتہارات کے لیے Premium پیکج دیکھیں۔';
   }
 }
 async function publish(e) {
@@ -699,8 +699,8 @@ async function publish(e) {
     };
     const { error } = await supabase.from('listings').insert(payload);
     if (error) {
-      if (String(error.message || '').includes('FREE_LISTING_LIMIT')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
-      if (String(error.message || '').includes('FREE_LISTING_LIMIT_10_DAYS')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 10 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+      if (String(error.message || '').includes('FREE_LISTING_LIMIT')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
+      if (String(error.message || '').includes('FREE_LISTING_LIMIT_7_DAYS')) throw new Error('مفت اشتہار کی حد پوری ہو چکی ہے۔ اگلا مفت اشتہار 7 دن بعد لگا سکیں گے۔ اضافی اشتہار کے لیے Premium پیکج منتخب کریں۔');
       if (String(error.message || '').includes('AGENT_LISTING_LIMIT_REACHED') || String(error.message || '').includes('AGENT_LISTING_LIMIT_40')) throw new Error('آپ کے ایجنٹ پیکج کی 40 فعال اشتہارات کی حد پوری ہو چکی ہے۔');
       throw new Error('اشتہار جمع نہیں ہوا: ' + error.message);
     }
