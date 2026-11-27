@@ -260,7 +260,12 @@ function shell() {
         <label>زیادہ سے زیادہ ایڈوانس<input name="advance" type="number" min="0"></label>
         <label class="wide">اضافی شرائط<textarea name="notes"></textarea></label>
         <button class="primary">مطابق پراپرٹیز تلاش کریں</button>
-      </form></div><div id="wantedResults" class="cards"></div></section>
+      </form>
+      <p class="muted">آپ کی ضرورت محفوظ ہو جائے گی تاکہ بعد میں بھی اسے دیکھ سکیں۔</p>
+      </div>
+      <section class="panel"><h3>میری محفوظ ضروریات</h3><div id="myRequirements"><div class="empty">ضروریات لوڈ ہو رہی ہیں…</div></div></section>
+      <div class="results-heading"><h2>آپ کی ضرورت کے مطابق پراپرٹیز</h2></div>
+      <div id="wantedResults" class="cards"></div></section>
     <section id="mine" class="tab hidden"><div class="panel"><h2>میرے اشتہارات</h2><p class="muted">یہاں آپ اپنے لگائے ہوئے اشتہارات دیکھ اور ختم کر سکتے ہیں۔</p></div><div id="myListings" class="cards"></div></section>
     <section id="notifications" class="tab hidden"><div class="panel"><h2>اطلاعات</h2><p class="muted">آپ کے اشتہارات پر آنے والے نئے کمنٹس کی اطلاع یہاں ملے گی۔</p><div id="notificationsList"></div></div></section>
     <section id="account" class="tab hidden"><div class="panel"><h2>اکاؤنٹ میں لاگ اِن</h2>
@@ -399,6 +404,7 @@ async function tab(name) {
   if (name === 'admin') await loadAdmin();
   if (name === 'premium') await loadPremium();
   if (name === 'mine') await loadMyListings();
+  if (name === 'wanted') await loadMyRequirements();
   if (name === 'notifications') await loadNotifications();
 }
 function isVideoMedia(url) { return /\.(mp4|webm|mov)(\?|$)/i.test(String(url || '')); }
@@ -717,14 +723,56 @@ async function publish(e) {
 }
 async function matchWanted(e) {
   e.preventDefault();
-  if (!supabase) return notice('Supabase سیٹنگ مکمل نہیں۔');
-  const f = new FormData(e.target), area = String(f.get('area') || '').trim();
+  if (!supabase || !state.user) return notice('ضرورت محفوظ کرنے کے لیے پہلے لاگ اِن کریں۔');
+  const form = e.currentTarget, f = new FormData(form);
+  const area = String(f.get('area') || '').trim();
+  const type = String(f.get('type') || '');
+  const rent = Number(f.get('rent'));
+  const advance = Number(f.get('advance') || 0);
+  const notes = String(f.get('notes') || '').trim();
+  if (area.length < 2 || !['گھر','دکان'].includes(type) || !Number.isFinite(rent) || rent <= 0 || !Number.isFinite(advance) || advance < 0) {
+    return notice('براہِ کرم شہر، پراپرٹی کی قسم اور درست بجٹ درج کریں۔');
+  }
+  const button = form.querySelector('button[type="submit"]');
+  if (button) { button.disabled = true; button.textContent = 'محفوظ ہو رہا ہے…'; }
+  const { error: saveError } = await supabase.from('property_requirements').insert({
+    user_id: state.user.id, area, type, max_rent: rent, max_advance: advance, notes
+  });
+  if (button) { button.disabled = false; button.textContent = 'مطابق پراپرٹیز تلاش کریں'; }
+  if (saveError) return notice('آپ کی ضرورت محفوظ نہیں ہوئی: ' + saveError.message);
   let q = supabase.from('listings').select('*').eq('status', 'active')
-    .ilike('area', `%${area}%`).eq('type', f.get('type'))
-    .lte('rent', Number(f.get('rent'))).lte('advance', Number(f.get('advance') || 999999999));
-  const { data, error } = await q;
-  if (error) return notice(error.message);
+    .ilike('area', `%${area}%`).eq('type', type)
+    .lte('rent', rent).lte('advance', advance);
+  const { data, error } = await q.order('created_at', { ascending: false }).limit(50);
+  if (error) return notice('مطابق پراپرٹیز تلاش نہیں ہوئیں: ' + error.message);
   await render(data || [], 'wantedResults');
+  await loadMyRequirements();
+  notice('آپ کی ضرورت محفوظ ہو گئی ہے۔');
+}
+async function loadMyRequirements() {
+  const el = $('#myRequirements');
+  if (!el) return;
+  if (!supabase || !state.user) { el.innerHTML = '<div class="empty">ضرورت محفوظ کرنے کے لیے لاگ اِن کریں۔</div>'; return; }
+  const { data, error } = await supabase.from('property_requirements')
+    .select('id,area,type,max_rent,max_advance,notes,status,created_at')
+    .eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(30);
+  if (error) { el.innerHTML = '<div class="empty">ضروریات لوڈ نہیں ہوئیں: ' + esc(error.message) + '</div>'; return; }
+  if (!data?.length) { el.innerHTML = '<div class="empty">ابھی کوئی ضرورت محفوظ نہیں۔</div>'; return; }
+  el.innerHTML = data.map(r => `<article class="requirement-row">
+    <div><strong>${esc(r.type)} · ${esc(r.area)}</strong>
+    <p>زیادہ سے زیادہ کرایہ: Rs ${Number(r.max_rent).toLocaleString('en-PK')} · ایڈوانس: Rs ${Number(r.max_advance).toLocaleString('en-PK')}</p>
+    ${r.notes ? '<small>' + esc(r.notes) + '</small>' : ''}
+    <small>${new Date(r.created_at).toLocaleDateString('ur-PK')} · ${r.status === 'active' ? 'فعال' : 'بند'}</small></div>
+    <button class="danger" type="button" data-delete-requirement="${esc(r.id)}">حذف کریں</button>
+  </article>`).join('');
+  el.querySelectorAll('[data-delete-requirement]').forEach(btn => btn.addEventListener('click', async () => {
+    if (!confirm('کیا آپ یہ محفوظ ضرورت حذف کرنا چاہتے ہیں؟')) return;
+    const { error: deleteError } = await supabase.from('property_requirements').delete()
+      .eq('id', btn.dataset.deleteRequirement).eq('user_id', state.user.id);
+    if (deleteError) return notice('ضرورت حذف نہیں ہوئی: ' + deleteError.message);
+    await loadMyRequirements();
+    notice('ضرورت حذف کر دی گئی۔');
+  }));
 }
 async function reportListing(id) {
   if (!supabase || !state.user) return notice('رپورٹ کرنے کے لیے پہلے لاگ اِن کریں۔');
