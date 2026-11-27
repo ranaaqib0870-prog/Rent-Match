@@ -2,42 +2,43 @@
 <html lang="ur" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#126b4b">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="RENT MATCH">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="/icon.svg">
-  <link rel="apple-touch-icon" href="/icon.svg">
-  <meta name="description" content="RENT MATCH پر گھر اور دکانیں آسانی سے تلاش کریں یا اپنی پراپرٹی کرائے پر دینے کے لیے مفت اشتہار لگائیں۔">
-  <meta property="og:title" content="RENT MATCH — گھر اور دکان کرائے پر">
-  <meta property="og:description" content="صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے">
-  <meta property="og:type" content="website">
-  <title>RENT MATCH — گھر اور دکان کرائے پر</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f684b">
+  <meta name="description" content="RENT MATCH — گھر اور دکان کرائے پر تلاش کریں یا اپنی پراپرٹی کا اشتہار لگائیں۔">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <title>RENT MATCH | گھر اور دکان کرائے پر</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f4f8f5;color:#18382c;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+    #bootStatus{max-width:520px;margin:12vh auto;padding:28px 22px;text-align:center;background:#fff;border:1px solid #dce9e0;border-radius:20px;box-shadow:0 12px 36px #163b2710}
+    #bootStatus h1{color:#126b4b;font-size:27px;margin:0 0 12px}#bootMessage{line-height:1.8;color:#60766a}
+    #bootRetry{border:0;border-radius:10px;background:#126b4b;color:#fff;font-weight:700;padding:12px 22px;font-size:15px}
+    .boot-mark{font-size:38px;margin-bottom:8px}
+  </style>
 </head>
 <body>
-  <div id="app"><div id="bootStatus" style="max-width:520px;margin:12vh auto;padding:24px;border-radius:16px;background:#fff;border:1px solid #ddd;font-family:Arial,sans-serif;text-align:center;color:#222"><h2 style="color:#126b4b">RENT MATCH</h2><p id="bootMessage">ایپ شروع ہو رہی ہے… براہِ کرم چند لمحے انتظار کریں۔</p><button onclick="location.reload()" style="padding:10px 18px;border:0;border-radius:8px;background:#126b4b;color:white">دوبارہ کھولیں</button></div></div>
+  <div id="app">
+    <section id="bootStatus" role="status" aria-live="polite">
+      <div class="boot-mark">🏠</div><h1>RENT MATCH</h1>
+      <p id="bootMessage">ایپ شروع ہو رہی ہے… براہِ کرم چند لمحے انتظار کریں۔</p>
+      <button id="bootRetry" type="button" onclick="location.reload()">دوبارہ کھولیں</button>
+    </section>
+  </div>
   <script>
-    (function () {
-      var timer = setTimeout(function () {
-        var box = document.getElementById('bootMessage');
-        if (box && document.getElementById('bootStatus')) {
-          box.textContent = 'ایپ کا JavaScript شروع نہیں ہو سکا۔ صفحہ دوبارہ کھولیں؛ اگر مسئلہ رہے تو اس پیغام کا اسکرین شاٹ بھیجیں۔';
-        }
-      }, 10000);
-      window.addEventListener('error', function (event) {
-        var box = document.getElementById('bootMessage');
-        if (box) box.textContent = 'JavaScript Error: ' + (event.message || 'Script load failed');
-      });
-      window.addEventListener('unhandledrejection', function (event) {
-        var box = document.getElementById('bootMessage');
-        if (box) box.textContent = 'Startup Error: ' + String(event.reason && event.reason.message || event.reason || 'Unknown error');
-      });
-      window.__rentMatchBootReady = function () { clearTimeout(timer); };
-      window.__rentMatchBootTimer = timer;
-    })();
+    window.__rentMatchBootTimer=setTimeout(function(){
+      var message=document.getElementById('bootMessage');
+      if(message) message.textContent='ایپ لوڈ ہونے میں مسئلہ آ رہا ہے۔ انٹرنیٹ چیک کرکے دوبارہ کوشش کریں۔';
+    },12000);
+    window.addEventListener('error',function(event){
+      var message=document.getElementById('bootMessage');
+      if(message && event.message) message.textContent='App loading error: '+event.message;
+    });
+    window.addEventListener('unhandledrejection',function(event){
+      var message=document.getElementById('bootMessage');
+      if(message) message.textContent='Startup error: '+String(event.reason && event.reason.message || event.reason || 'Unknown error');
+    });
+    window.__rentMatchBootReady=function(){clearTimeout(window.__rentMatchBootTimer)};
   </script>
-  <script type="module" src="/main.js" onerror="(function(){var box=document.getElementById('bootMessage');if(box)box.textContent='JavaScript file load nahi hui. Internet connection check karke page reload karein.';})()"></script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
