@@ -105,7 +105,7 @@ const translations = {
   'ایجنٹ بزنس پروفائل':'Agent Business Profile','ایجنٹ پیکج فعال ہونے کے بعد اپنا کاروباری پروفائل مکمل کریں۔':'Complete your business profile after your Agent package is activated.',
   'کاروبار / ایجنسی کا نام':'Business / Agency Name','رابطہ موبائل نمبر':'Contact Mobile Number','مختصر تعارف':'Short Description','پروفائل محفوظ کریں':'Save Profile',
   'کاروبار کا نام اور رابطہ نمبر لازمی درج کریں۔':'Business name and contact number are required.','آپ کا ایجنٹ پروفائل محفوظ ہو گیا ہے۔':'Your Agent profile has been saved.',
-  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent','پرائیویسی پالیسی':'Privacy Policy','استعمال کی شرائط':'Terms of Use','RENT MATCH میں خوش آمدید':'Welcome to RENT MATCH','گھر یا دکان تلاش کرنے، اشتہار لگانے اور تمام سہولیات استعمال کرنے کے لیے پہلے لاگ اِن کریں یا نیا اکاؤنٹ بنائیں۔':'Sign in or create an account to find homes or shops, post listings and use all features.','Google / Gmail سے لاگ اِن یا سائن اپ کریں':'Continue with Google / Gmail','Facebook سے لاگ اِن یا سائن اپ کریں':'Continue with Facebook','نیا اکاؤنٹ بنانے کے لیے بھی یہی آپشن استعمال کریں۔':'Use either option to create a new account too.','WELCOME':'WELCOME','صارفین کی رپورٹس':'User Reports','ابھی کوئی رپورٹ موصول نہیں ہوئی۔':'No reports have been received yet.','رپورٹس لوڈ نہیں ہو سکیں: ':'Could not load reports: ','پراپرٹی دستیاب نہیں':'Property unavailable','اشتہار: ':'Listing: ','رپورٹ کنندہ: ':'Reporter: ','کارروائی مکمل / اشتہار غیر فعال':'Action completed / listing inactive'
+  'ایجنٹ پروفائل محفوظ نہیں ہوا: ':'Could not save Agent profile: ','Verified Agent':'Verified Agent','پرائیویسی پالیسی':'Privacy Policy','استعمال کی شرائط':'Terms of Use','APNA KAAM میں خوش آمدید':'Welcome to APNA KAAM','گھر یا دکان تلاش کرنے، اشتہار لگانے اور تمام سہولیات استعمال کرنے کے لیے پہلے لاگ اِن کریں یا نیا اکاؤنٹ بنائیں۔':'Sign in or create an account to find homes or shops, post listings and use all features.','Google / Gmail سے لاگ اِن یا سائن اپ کریں':'Continue with Google / Gmail','Facebook سے لاگ اِن یا سائن اپ کریں':'Continue with Facebook','نیا اکاؤنٹ بنانے کے لیے بھی یہی آپشن استعمال کریں۔':'Use either option to create a new account too.','WELCOME':'WELCOME','صارفین کی رپورٹس':'User Reports','ابھی کوئی رپورٹ موصول نہیں ہوئی۔':'No reports have been received yet.','رپورٹس لوڈ نہیں ہو سکیں: ':'Could not load reports: ','پراپرٹی دستیاب نہیں':'Property unavailable','اشتہار: ':'Listing: ','رپورٹ کنندہ: ':'Reporter: ','کارروائی مکمل / اشتہار غیر فعال':'Action completed / listing inactive'
 
 };
 let currentLanguage = 'ur';
@@ -185,9 +185,9 @@ function shell() {
   $('#app').innerHTML = `
   <section id="authGate" class="auth-gate hidden" dir="rtl">
     <div class="auth-card">
-      <div class="auth-logo">🏠 RENT MATCH</div>
+      <div class="auth-logo">🏠 APNA KAAM</div>
       <span class="auth-kicker">WELCOME</span>
-      <h1>RENT MATCH میں خوش آمدید</h1>
+      <h1>APNA KAAM میں خوش آمدید</h1>
       <p>گھر یا دکان تلاش کرنے، اشتہار لگانے اور تمام سہولیات استعمال کرنے کے لیے پہلے لاگ اِن کریں یا نیا اکاؤنٹ بنائیں۔</p>
       <button id="gateGoogleLogin" class="primary auth-action" type="button">Google / Gmail سے لاگ اِن یا سائن اپ کریں</button>
       <button id="gateFacebookLogin" class="secondary auth-action" type="button">Facebook سے لاگ اِن یا سائن اپ کریں</button>
@@ -195,7 +195,7 @@ function shell() {
       <div class="auth-links"><a href="/privacy.html">پرائیویسی پالیسی</a><span>·</span><a href="/terms.html">استعمال کی شرائط</a></div>
     </div>
   </section>
-  <header id="appHeader"><div class="wrap"><div class="brand-row"><div class="brand">🏠 RENT MATCH</div><div class="header-actions"><button id="notificationBell" class="notification-bell" type="button" aria-label="Notifications" title="Notifications">🔔<span id="notificationCount" class="notification-count hidden">0</span></button><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div></div>
+  <header id="appHeader"><div class="wrap"><div class="brand-row"><div class="brand">🏠 APNA KAAM</div><div class="header-actions"><button id="notificationBell" class="notification-bell" type="button" aria-label="Notifications" title="Notifications">🔔<span id="notificationCount" class="notification-count hidden">0</span></button><label class="language-label">زبان / Language<select id="languageSelect" aria-label="Language"><option value="ur">اردو</option><option value="en">English</option></select></label></div></div>
     <p>صحیح پراپرٹی، صحیح کرایہ دار — آسانی سے</p>
     <nav>
       <button data-tab="search" class="active">پراپرٹی تلاش کریں</button>
@@ -210,13 +210,13 @@ function shell() {
     <div class="page-layout"><div class="page-content">
     <section id="search" class="tab">
       <div class="search-intro">
-        <span class="eyebrow">RENT MATCH</span>
+        <span class="eyebrow">APNA KAAM</span>
         <h1>گھر یا دکان تلاش کریں</h1>
         <p>اپنی ضرورت کے مطابق پراپرٹی تلاش کرنے کے لیے یہاں کلک کریں۔</p>
         <button id="openPropertySearch" class="primary" type="button">گھر یا دکان تلاش کریں</button>
       </div>
       <div class="earning-below-search">      <section class="earning-panel" aria-labelledby="earningTitle">
-        <div class="earning-heading"><span class="eyebrow">RENT MATCH BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
+        <div class="earning-heading"><span class="eyebrow">APNA KAAM BUSINESS</span><h2 id="earningTitle">اپنے اشتہار کو نمایاں کریں اور جلد کرایہ دار پائیں</h2><p>عام پراپرٹی اشتہار ہمیشہ مفت رہے گا۔ اضافی رسائی کے لیے اختیاری paid سہولیات پیش کی جائیں گی۔</p><p class="muted">عام صارف ہر 10 دن میں ایک مفت اشتہار لگا سکتا ہے۔ اضافی اشتہارات کے لیے Premium پیکج دستیاب ہوگا۔</p></div>
         <div class="earning-grid">
           <article class="earning-card featured-plan"><span class="earning-badge">⭐ Premium</span><h3>پریمیم پیکج</h3><p>مدت کے دوران ہر 10 دن والی مفت اشتہار حد ختم؛ مزید اشتہارات لگائیں۔</p><ul><li>7 دن — Rs 300</li><li>15 دن — Rs 500</li><li>30 دن — Rs 900</li></ul><button type="button" class="primary" id="openPremiumFromCard">پریمیم حاصل کریں</button></article>
           <article class="earning-card agent-plan"><span class="earning-badge">🏢 Property Agent</span><h3>پراپرٹی ڈیلر پیکجز</h3><p>ڈیلرز اور ایجنٹس کے لیے الگ پیکجز، زیادہ اشتہارات اور کاروباری پروفائل۔</p><ul><li>اسٹارٹر ایجنٹ — 7 دن — Rs 500</li><li>پروفیشنل ایجنٹ — 15 دن — Rs 900</li><li>بزنس ایجنٹ — 30 دن — Rs 1,500</li></ul><p><strong>40 فعال اشتہارات تک</strong></p><ul><li>الگ ایجنٹ پروفائل اور Verified Agent بیج</li><li>تمام اشتہارات ایک جگہ مینیج کریں</li><li>پروفائل پر کاروباری رابطہ نمبر</li></ul><button type="button" class="primary" id="openAgentPackages">ایجنٹ پیکج حاصل کریں</button></article>
@@ -319,7 +319,7 @@ function shell() {
       </div>
 
     </div>
-  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><div id="appToast" class="app-toast" role="status" aria-live="polite"></div><footer>RENT MATCH © · <a href="/privacy.html">پرائیویسی پالیسی</a> · <a href="/terms.html">استعمال کی شرائط</a></footer>`;
+  </main><div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true" aria-label="Media viewer"><button type="button" class="media-viewer-close" aria-label="Close">×</button><div id="mediaViewerContent" class="media-viewer-content"></div></div><div id="appToast" class="app-toast" role="status" aria-live="polite"></div><footer>APNA KAAM © · <a href="/privacy.html">پرائیویسی پالیسی</a> · <a href="/terms.html">استعمال کی شرائط</a></footer>`;
 
   const languageSelect = $('#languageSelect');
   if (languageSelect) {
@@ -329,13 +329,13 @@ function shell() {
     watchDynamicTranslations();
   }
   // Delegate navigation clicks so dynamically translated/mobile-rendered nav buttons always work.
-  $('#notificationBell')?.addEventListener('click', () => tab('notifications').catch(error => { console.error('RENT MATCH notifications error:', error); notice('اطلاعات ابھی لوڈ نہیں ہو سکیں۔'); }));
+  $('#notificationBell')?.addEventListener('click', () => tab('notifications').catch(error => { console.error('APNA KAAM notifications error:', error); notice('اطلاعات ابھی لوڈ نہیں ہو سکیں۔'); }));
   document.querySelector('nav')?.addEventListener('click', e => {
     const button = e.target.closest('button[data-tab]');
     if (!button) return;
     e.preventDefault();
     tab(button.dataset.tab).catch(error => {
-      console.error('RENT MATCH navigation error:', error);
+      console.error('APNA KAAM navigation error:', error);
       notice('یہ آپشن ابھی نہیں کھل سکا۔ دوبارہ کوشش کریں۔');
     });
   });
@@ -1068,7 +1068,7 @@ async function start() {
   });
 }
 start().catch(error => {
-  console.error('RENT MATCH startup error:', error);
+  console.error('APNA KAAM startup error:', error);
   const app = $('#app');
-  if (app) app.innerHTML = `<div class="panel" role="alert"><h2>RENT MATCH شروع نہیں ہو سکی</h2><p>براہِ کرم دوبارہ کوشش کریں۔</p><p class="muted">Error: ${String(error?.message || error || 'Unknown startup error').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p><button class="primary" type="button" onclick="location.reload()">دوبارہ کھولیں / Reload</button></div>`;
+  if (app) app.innerHTML = `<div class="panel" role="alert"><h2>APNA KAAM شروع نہیں ہو سکی</h2><p>براہِ کرم دوبارہ کوشش کریں۔</p><p class="muted">Error: ${String(error?.message || error || 'Unknown startup error').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p><button class="primary" type="button" onclick="location.reload()">دوبارہ کھولیں / Reload</button></div>`;
 });
